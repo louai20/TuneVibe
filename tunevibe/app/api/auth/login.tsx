@@ -1,4 +1,4 @@
-import React from "react";
+/**import React from "react";
 
 const spotify_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const spotify_REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URL;
@@ -19,3 +19,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+**/
