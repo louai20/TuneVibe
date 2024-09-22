@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react"
+import "@/styles/globals.css"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -61,7 +62,7 @@ export default function Home() {
           <nav className="flex items-center space-x-4">
             <ul className="flex space-x-4">
               <li><a href="#" className="hover:underline">Home</a></li>
-              <li><a href="#" className="hover:underline">About</a></li>
+              <li><a href="/aboutus" className="hover:underline">About</a></li>
               <li><a href="#" className="hover:underline">Contact</a></li>
             </ul>
             {isLoggedIn ? (
