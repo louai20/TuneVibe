@@ -1,19 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import "@/styles/globals.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import {
-    CloudIcon,
-    DownloadIcon,
-    ShareIcon,
-    SpotifyIcon,
-    UserIcon,
-} from "lucide-react";
+import { CloudIcon, DownloadIcon, ShareIcon, UserIcon } from "lucide-react";
 import NavBar from "@/NavBar";
+
+import { fetchPlaylist, PlaylistData } from "@/utils/fetchPlaylist";
 
 // Assume we have a WordCloud component
 const WordCloud = ({ words }: { words: string[] }) => (
@@ -45,6 +42,34 @@ export default function Home() {
         },
     ];
 
+    const [playlistUrl, setPlaylistUrl] = useState("");
+    const [playlistData, setPlaylistData] = useState<PlaylistData | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const extractPlaylistId = (url: string) => {
+        const match = url.match(/playlist\/(\w+)/);
+        return match ? match[1] : null;
+    };
+
+    const handleFetchPlaylist = async () => {
+        setIsLoading(true);
+        setPlaylistData(null);
+
+        const playlistId = extractPlaylistId(playlistUrl);
+        if (playlistId) {
+            try {
+                const data = await fetchPlaylist(playlistId);
+                setPlaylistData(data);
+                console.log(data);
+            } catch (error) {
+                console.error("Error fetching playlist data:", error);
+            }
+        } else {
+            console.error("Invalid Spotify URL");
+        }
+        setIsLoading(false);
+    };
+
     return (
         <div className="min-h-screen bg-background text-foreground">
             <NavBar />
@@ -72,16 +97,27 @@ export default function Home() {
                             <h2 className="text-xl font-semibold mb-4">
                                 Import or Select Music
                             </h2>
-                            <div className="flex space-x-4">
+                            <div className="flex space-x-4 mb-4">
                                 <Button className="flex items-center">
-                                    {/* <SpotifyIcon className="mr-2 h-4 w-4" /> */}
                                     Import from Spotify
                                 </Button>
                                 <Input
                                     type="text"
-                                    placeholder="Search for a song..."
+                                    value={playlistUrl}
+                                    onChange={(e) =>
+                                        setPlaylistUrl(e.target.value)
+                                    }
+                                    placeholder="OR Enter the URL of a specific playlist"
                                     className="flex-grow"
                                 />
+                            </div>
+                            <div className="flex space-x-4">
+                                <Button
+                                    className="flex items-center"
+                                    onClick={handleFetchPlaylist}
+                                >
+                                    Analyse
+                                </Button>
                             </div>
                         </section>
 
@@ -89,24 +125,24 @@ export default function Home() {
                             <h2 className="text-xl font-semibold mb-4">
                                 Mood and Lyrics Analysis
                             </h2>
-                            <Tabs defaultValue="wordcloud">
+                            <Tabs defaultValue="moodchart">
                                 <TabsList>
+                                    <TabsTrigger value="moodchart">
+                                        Mood Chart
+                                    </TabsTrigger>
                                     <TabsTrigger value="wordcloud">
                                         Word Cloud
                                     </TabsTrigger>
-                                    <TabsTrigger value="chart">
-                                        Mood Chart
-                                    </TabsTrigger>
                                 </TabsList>
+                                <TabsContent value="moodchart">
+                                    {/* {isLoading ? (
+                                        <p>Loading...</p>
+                                    ) : (
+                                        <MoodChart data={playlistData} />
+                                    )} */}
+                                </TabsContent>
                                 <TabsContent value="wordcloud">
                                     <WordCloud words={sampleWords} />
-                                </TabsContent>
-                                <TabsContent value="chart">
-                                    <div className="h-64 bg-muted rounded-lg flex items-center justify-center">
-                                        <span className="text-muted-foreground">
-                                            Mood Chart Placeholder
-                                        </span>
-                                    </div>
                                 </TabsContent>
                             </Tabs>
                         </section>
