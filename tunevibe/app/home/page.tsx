@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CloudIcon, DownloadIcon, ShareIcon, UserIcon } from "lucide-react";
 import NavBar from "@/NavBar";
 
-import { fetchPlaylist, PlaylistData } from "@/utils/fetchPlaylist";
+// import { fetchPlaylist, PlaylistData } from "@/utils/fetchPlaylist";
+// import { PlaylistAudioFeatures } from "@/utils/types";
 
 // Assume we have a WordCloud component
 const WordCloud = ({ words }: { words: string[] }) => (
@@ -43,13 +44,32 @@ export default function Home() {
     ];
 
     const [playlistUrl, setPlaylistUrl] = useState("");
-    const [playlistData, setPlaylistData] = useState<PlaylistData | null>(null);
+    const [playlistData, setPlaylistData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const extractPlaylistId = (url: string) => {
         const match = url.match(/playlist\/(\w+)/);
         return match ? match[1] : null;
     };
+
+    // const handleFetchPlaylist = async () => {
+    //     setIsLoading(true);
+    //     setPlaylistData(null);
+
+    //     const playlistId = extractPlaylistId(playlistUrl);
+    //     if (playlistId) {
+    //         try {
+    //             const data = await fetchPlaylist(playlistId);
+    //             setPlaylistData(data);
+    //             console.log(data);
+    //         } catch (error) {
+    //             console.error("Error fetching playlist data:", error);
+    //         }
+    //     } else {
+    //         console.error("Invalid Spotify URL");
+    //     }
+    //     setIsLoading(false);
+    // };
 
     const handleFetchPlaylist = async () => {
         setIsLoading(true);
@@ -58,14 +78,17 @@ export default function Home() {
         const playlistId = extractPlaylistId(playlistUrl);
         if (playlistId) {
             try {
-                const data = await fetchPlaylist(playlistId);
+                const response = await axios.get(`/api/playlist/${playlistId}`);
+                const data = response.data;
                 setPlaylistData(data);
                 console.log(data);
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Error fetching playlist data:", error);
+                // set error status
             }
         } else {
             console.error("Invalid Spotify URL");
+            // set error status
         }
         setIsLoading(false);
     };
