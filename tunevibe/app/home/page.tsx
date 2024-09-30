@@ -118,9 +118,9 @@ export default function Home() {
                     <Button
                       className="flex items-center"
                       type="button"
-                      onClick={() => signOut()}
+                      onClick={() => signOut({ callbackUrl: "/" })}
                     >
-                      Imported from {session.user?.name}
+                      Imported from {session.user?.name} <br /> Sign out
                     </Button>
                   ) : (
                     <Button
