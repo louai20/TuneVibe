@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
+import Link from "next/link";
 
 import {
     DropdownMenu,
@@ -19,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UserIcon } from "lucide-react";
-import { useState } from "react";
 
 const NavBar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -41,18 +41,20 @@ const NavBar = () => {
         <div>
             <header className="border-b">
                 <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">TuneVibe</h1>
+                <Link href="/home" className="text-2xl font-bold">
+                        TuneVibe
+                    </Link>
                     <nav className="flex items-center space-x-4">
                         <ul className="flex space-x-4">
                             <li>
-                                <a href="/home" className="hover:underline">
+                            <Link href="/home" className="hover:underline">
                                     Home
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/aboutus" className="hover:underline">
+                            <Link href="/aboutus" className="hover:underline">
                                     About
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                         {isLoggedIn ? (
