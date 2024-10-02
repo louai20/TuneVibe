@@ -30,7 +30,7 @@ export default function Home() {
     {
       title: "Uptown Funk",
       artist: "Mark Ronson ft. Bruno Mars",
-      mood: "Energetic",
+      mood: "Energeti",
     },
   ];
 
