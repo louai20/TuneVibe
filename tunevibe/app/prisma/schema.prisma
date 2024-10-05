@@ -14,11 +14,3 @@ model User {
   hashedPassword String?
 }
 
-
-model Playlist {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  title        String
-  image        String?
-  uri          String @unique
-  addedBy      String
-}

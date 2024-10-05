@@ -1,176 +1,225 @@
-"use client"; // Ensure this is a client component
+"use client";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import "@/styles/globals.css";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter for navigation
-import { useSession } from "next-auth/react"; // Import useSession
+import { CloudIcon, DownloadIcon, ShareIcon, UserIcon } from "lucide-react";
+import NavBar from "@/NavBar";
+import { signIn, signOut, useSession } from "next-auth/react";
 
-type Track = {
-  id: string;
-  name: string;
-  artists: { name: string }[]; // Artists is an array
-};
+// import { fetchPlaylist, PlaylistData } from "@/utils/fetchPlaylist";
+// import { PlaylistAudioFeatures } from "@/utils/types";
 
-type Playlist = {
-  id: string;
-  name: string;
-  description?: string;
-  images?: { url: string }[]; // Added images property for album images
-  tracks?: Track[]; // Optional tracks for each playlist
-};
+// Assume we have a WordCloud component
+const WordCloud = ({ words }: { words: string[] }) => (
+  <div className="h-64 bg-muted rounded-lg flex items-center justify-center">
+    <CloudIcon className="w-12 h-12 text-muted-foreground" />
+    <span className="ml-2 text-muted-foreground">Word Cloud Placeholder</span>
+  </div>
+);
 
-export default function Playlists() {
-  const { data: session } = useSession(); // Use useSession to get the session
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const router = useRouter(); // Initialize router
+export default function Home() {
+  // This would be populated with actual data in a real application
+  const sampleWords = ["love", "heartbreak", "dance", "party", "sad", "happy"];
+  const sampleTracks = [
+    { title: "Happy", artist: "Pharrell Williams", mood: "Joyful" },
+    { title: "Someone Like You", artist: "Adele", mood: "Melancholic" },
+    {
+      title: "Uptown Funk",
+      artist: "Mark Ronson ft. Bruno Mars",
+      mood: "Energeti",
+    },
+  ];
 
-  useEffect(() => {
-    let isMounted = true; // Track if the component is mounted
+  const [playlistUrl, setPlaylistUrl] = useState("");
+  const [playlistData, setPlaylistData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const fetchPlaylists = async () => {
-      setIsLoading(true); // Set loading state
+  const extractPlaylistId = (url: string) => {
+    const match = url.match(/playlist\/(\w+)/);
+    return match ? match[1] : null;
+  };
 
+  // const handleFetchPlaylist = async () => {
+  //     setIsLoading(true);
+  //     setPlaylistData(null);
+
+  //     const playlistId = extractPlaylistId(playlistUrl);
+  //     if (playlistId) {
+  //         try {
+  //             const data = await fetchPlaylist(playlistId);
+  //             setPlaylistData(data);
+  //             console.log(data);
+  //         } catch (error) {
+  //             console.error("Error fetching playlist data:", error);
+  //         }
+  //     } else {
+  //         console.error("Invalid Spotify URL");
+  //     }
+  //     setIsLoading(false);
+  // };
+
+  const handleFetchPlaylist = async () => {
+    setIsLoading(true);
+    setPlaylistData(null);
+
+    const playlistId = extractPlaylistId(playlistUrl);
+    if (playlistId) {
       try {
-        const response = await fetch("/api/userPlayList");
-        if (!response.ok) {
-          throw new Error("Failed to fetch playlists");
-        }
-
-        const data = await response.json();
-        console.log("Fetched Playlists:", data); // Log fetched data for debugging
-
-        // Only update state if the component is still mounted
-        if (isMounted) {
-          const playlistsWithTracks = await Promise.all(
-            data.items.map(async (playlist: Playlist) => {
-              const tracksResponse = await fetch(playlist.tracks?.href, {
-                headers: {
-                  Authorization: `Bearer ${session?.accessToken}`, // Use session access token if required
-                },
-              });
-              const tracksData = await tracksResponse.json();
-
-              return {
-                ...playlist,
-                tracks: tracksData.items.map((track: any) => ({
-                  id: track.track.id,
-                  name: track.track.name,
-                  artists: track.track.artists,
-                })),
-              };
-            })
-          );
-
-          setPlaylists(playlistsWithTracks); // Set playlists with their respective tracks
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(
-            err instanceof Error ? err.message : "An unknown error occurred"
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false); // Reset loading state only if still mounted
-        }
+        const response = await axios.get(`/api/playlist/${playlistId}`);
+        const data = response.data;
+        setPlaylistData(data);
+        console.log(data);
+      } catch (error: any) {
+        console.error("Error fetching playlist data:", error);
+        // set error status
       }
-    };
-
-    if (session) {
-      fetchPlaylists(); // Call the fetch function only if session is available
+    } else {
+      console.error("Invalid Spotify URL");
+      // set error status
     }
-
-    return () => {
-      isMounted = false; // Cleanup function to mark component as unmounted
-    };
-  }, [session]); // Add session as a dependency to rerun when it changes
-
-  // Rendering logic
-  if (isLoading) {
-    return <p>Loading playlists...</p>; // Show loading state
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>; // Show error message
-  }
-
+    setIsLoading(false);
+  };
+  // nextauth
+  const { data: session, status } = useSession();
   return (
-    <div className="bg-black text-gray-300 min-h-screen p-10">
-      <h1 className="text-white text-4xl mb-6">Your Playlists</h1>
-      <div className="space-y-4">
-        {playlists.map((playlist) => (
-          <PlaylistCard key={playlist.id} playlist={playlist} />
-        ))}
-      </div>
+    <div className="min-h-screen bg-background text-foreground">
+      <NavBar />
+
+      <main className="container mx-auto px-4 py-8">
+        {
+          // showProfile ? (
+          //   <section className="mb-8">
+          //     <h2 className="text-xl font-semibold mb-4">My Profile</h2>
+          //     <div className="bg-card text-card-foreground rounded-lg p-4">
+          //       <h3 className="font-semibold mb-2">John Doe</h3>
+          //       <p className="text-sm text-muted-foreground mb-4">john.doe@example.com</p>
+          //       <h4 className="font-semibold mb-2">My Playlists</h4>
+          //       <ul className="list-disc list-inside">
+          //         <li>Summer Hits 2023</li>
+          //         <li>Workout Mix</li>
+          //         <li>Chill Vibes</li>
+          //       </ul>
+          //       <Button className="mt-4" onClick={() => setShowProfile(false)}>Back to Analysis</Button>
+          //     </div>
+          //   </section>
+          // ) : (
+          <>
+            <section className="mb-8">
+              <h2 className="text-xl font-semibold mb-4">
+                Import or Select Music
+              </h2>
+              <div className="flex space-x-4 mb-4">
+                <div>
+                  {status === "authenticated" ? (
+                    <Button
+                      className="flex items-center"
+                      type="button"
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                    >
+                      Imported from {session.user?.name} <br /> Sign out
+                    </Button>
+                  ) : (
+                    <Button
+                      className="flex items-center"
+                      onClick={() => signIn("spotify")}
+                      disabled={status === "loading"}
+                    >
+                      Import from Spotify
+                    </Button>
+                  )}
+                </div>
+                <Input
+                  type="text"
+                  value={playlistUrl}
+                  onChange={(e) => setPlaylistUrl(e.target.value)}
+                  placeholder="OR Enter the URL of a specific playlist"
+                  className="flex-grow"
+                />
+              </div>
+              <div className="flex space-x-4">
+                <Button
+                  className="flex items-center"
+                  onClick={handleFetchPlaylist}
+                >
+                  Analyse
+                </Button>
+              </div>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-xl font-semibold mb-4">
+                Mood and Lyrics Analysis
+              </h2>
+              <Tabs defaultValue="moodchart">
+                <TabsList>
+                  <TabsTrigger value="moodchart">Mood Chart</TabsTrigger>
+                  <TabsTrigger value="wordcloud">Word Cloud</TabsTrigger>
+                </TabsList>
+                <TabsContent value="moodchart">
+                  {/* {isLoading ? (
+                                        <p>Loading...</p>
+                                    ) : (
+                                        <MoodChart data={playlistData} />
+                                    )} */}
+                </TabsContent>
+                <TabsContent value="wordcloud">
+                  <WordCloud words={sampleWords} />
+                </TabsContent>
+              </Tabs>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-xl font-semibold mb-4">Analysis Results</h2>
+              <div className="bg-card text-card-foreground rounded-lg p-4">
+                <p className="mb-2">Overall Mood: Energetic and Upbeat</p>
+                <p className="mb-2">
+                  Dominant Themes: Love, Celebration, Friendship
+                </p>
+                <p>Top Keywords: Dance, Party, Together, Night, Fun</p>
+              </div>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-xl font-semibold mb-4">Share and Download</h2>
+              <div className="flex space-x-4">
+                <Button className="flex items-center">
+                  <ShareIcon className="mr-2 h-4 w-4" />
+                  Share Analysis
+                </Button>
+                <Button variant="outline" className="flex items-center">
+                  <DownloadIcon className="mr-2 h-4 w-4" />
+                  Download Results
+                </Button>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-4">
+                Discover Similar Music
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {sampleTracks.map((track, index) => (
+                  <div
+                    key={index}
+                    className="bg-card text-card-foreground rounded-lg p-4"
+                  >
+                    <h3 className="font-semibold">{track.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {track.artist}
+                    </p>
+                    <p className="text-sm mt-2">Mood: {track.mood}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
+          // )
+        }
+      </main>
     </div>
   );
 }
-
-const PlaylistCard = ({ playlist }: { playlist: Playlist }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter(); // Initialize router for navigation
-
-  return (
-    <div className="bg-gray-800 rounded-lg p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          {playlist.images?.[0]?.url && (
-            <img
-              src={playlist.images[0].url}
-              alt={playlist.name}
-              className="w-16 h-16 rounded-md mr-4"
-            />
-          )}
-          <div>
-            <h2 className="text-xl font-semibold">{playlist.name}</h2>
-            {playlist.description && (
-              <p className="text-gray-500">{playlist.description}</p>
-            )}
-          </div>
-        </div>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="text-blue-500 hover:underline"
-        >
-          {isOpen ? "▲ Hide Tracks" : "▼ Show Tracks"}
-        </button>
-      </div>
-
-      {isOpen && (
-        <div className="mt-4">
-          <div className="flex text-gray-600">
-            <div className="p-2 w-8 flex-shrink-0"></div>
-            <div className="p-2 w-full">Title</div>
-            <div className="p-2 w-full">Artist</div>
-          </div>
-
-          {playlist.tracks?.map((track) => (
-            <div
-              key={track.id}
-              className="flex border-b border-gray-600 hover:bg-gray-700"
-            >
-              <div className="p-3 w-full">{track.name}</div>
-              <div className="p-3 w-full">
-                {track.artists.map((artist) => artist.name).join(", ")}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <button
-        onClick={() =>
-          router.push(
-            `/home?playlistUrl=${encodeURIComponent(
-              playlist.external_urls.spotify
-            )}`
-          )
-        } // Change `/analyze/${playlist.id}` to your actual analyze page route
-        className="mt-4 bg-green-500 text-white py-2 px-4 rounded-full"
-      >
-        Analyze Playlist
-      </button>
-    </div>
-  );
-};
