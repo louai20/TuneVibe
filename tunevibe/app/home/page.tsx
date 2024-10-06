@@ -161,11 +161,7 @@ export default function Home() {
                   <TabsTrigger value="wordcloud">Word Cloud</TabsTrigger>
                 </TabsList>
                 <TabsContent value="moodchart">
-                                        <MoodChart data={playlistData} />
-                                        <MoodChart data={playlistData} />
-                                    )} */}
                   <MoodChart data={playlistData} />
-                                    )} */}
                 </TabsContent>
                 <TabsContent value="wordcloud">
                   <WordCloud words={sampleWords} />
