@@ -32,8 +32,8 @@ export default function Page() {
 
           {/* Text Section */}
           <div className="flex flex-col justify-center">
-            <h2 className="text-3xl font-bold text-gray-900">Our Development Journey</h2>
-            <p className="text-lg text-gray-600 mt-4">
+            <h2 className="text-3xl font-bold text-white-900">Our Development Journey</h2>
+            <p className="text-lg text-white-600 mt-4">
             Building TuneVibe was a collaborative effort between passionate developers who wanted to enhance the way people engage with their music. Throughout the development process, we encountered various technical challenges, because ensuring a smooth user experience on our platform was a top priority. At the core of it—in every decision made—the driving factor was a desire to create a tool that was not only functional but also easy to use.</p>
           </div>
         </div>
