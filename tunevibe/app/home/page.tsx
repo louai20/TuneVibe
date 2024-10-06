@@ -12,8 +12,6 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import MoodChart from "@/mood-chart/page";
 import BubbleChart from "@/components/BubbleChart";
 
-import { FeatureKey } from "@/utils/types";
-
 // import { fetchPlaylist, PlaylistData } from "@/utils/fetchPlaylist";
 // import { PlaylistAudioFeatures } from "@/utils/types";
 
@@ -50,21 +48,6 @@ export default function Home() {
     const [playlistUrl, setPlaylistUrl] = useState("");
     const [playlistData, setPlaylistData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
-
-    const audioFeaturesOptions: FeatureKey[] = [
-        "acousticness",
-        "danceability",
-        "energy",
-        "instrumentalness",
-        "liveness",
-        "speechiness",
-        "valence",
-        "popularity",
-    ];
-
-    const [xFeature, setXFeature] = useState<FeatureKey>("danceability");
-    const [yFeature, setYFeature] = useState<FeatureKey>("energy");
-    const [sizeFeature, setSizeFeature] = useState<FeatureKey>("popularity");
 
     const extractPlaylistId = (url: string) => {
         const match = url.match(/playlist\/(\w+)/);
@@ -216,9 +199,6 @@ export default function Home() {
                                         ) : (
                                             <BubbleChart
                                                 data={playlistData.tracks.items}
-                                                xFeature={xFeature}
-                                                yFeature={yFeature}
-                                                sizeFeature={sizeFeature}
                                             />
                                         )}
                                     </div>
