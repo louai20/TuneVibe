@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CloudIcon, DownloadIcon, ShareIcon, UserIcon } from "lucide-react";
 import NavBar from "@/NavBar";
 import { signIn, signOut, useSession } from "next-auth/react";
+import MoodChart from "@/mood-chart/page";
 
 // import { fetchPlaylist, PlaylistData } from "@/utils/fetchPlaylist";
 // import { PlaylistAudioFeatures } from "@/utils/types";
@@ -160,11 +161,7 @@ export default function Home() {
                   <TabsTrigger value="wordcloud">Word Cloud</TabsTrigger>
                 </TabsList>
                 <TabsContent value="moodchart">
-                  {/* {isLoading ? (
-                                        <p>Loading...</p>
-                                    ) : (
-                                        <MoodChart data={playlistData} />
-                                    )} */}
+                  <MoodChart data={playlistData} />
                 </TabsContent>
                 <TabsContent value="wordcloud">
                   <WordCloud words={sampleWords} />
