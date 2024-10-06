@@ -23,7 +23,6 @@ export default function Playlists() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const router = useRouter(); // Initialize router
 
   useEffect(() => {
     let isMounted = true; // Track if the component is mounted
@@ -51,12 +50,21 @@ export default function Playlists() {
               });
               const tracksData = await tracksResponse.json();
 
+              // Filter out duplicate tracks based on track ID
+              const uniqueTracks = Array.from(
+                new Set(tracksData.items.map((track: any) => track.track.id))
+              ).map((id) => {
+                return tracksData.items.find(
+                  (track: any) => track.track.id === id
+                ).track;
+              });
+
               return {
                 ...playlist,
-                tracks: tracksData.items.map((track: any) => ({
-                  id: track.track.id,
-                  name: track.track.name,
-                  artists: track.track.artists,
+                tracks: uniqueTracks.map((track: any) => ({
+                  id: track.id,
+                  name: track.name,
+                  artists: track.artists,
                 })),
               };
             })
@@ -97,7 +105,10 @@ export default function Playlists() {
 
   return (
     <div className="bg-black text-gray-300 min-h-screen p-10">
-      <h1 className="text-white text-4xl mb-6">Your Playlists</h1>
+      <h1 className="text-white text-4xl mb-6">
+        Choose a playlist to analyze:
+      </h1>
+      <h6 className="text-white text-2xl mb-6">Your Playlists:</h6>
       <div className="space-y-4">
         {playlists.map((playlist) => (
           <PlaylistCard key={playlist.id} playlist={playlist} />
