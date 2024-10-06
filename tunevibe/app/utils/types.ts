@@ -24,15 +24,3 @@ export interface AudioFeatures {
 export interface PlaylistAudioFeatures extends PlaylistData {
     audioFeatures: AudioFeatures[];
 }
-
-export type AudioFeatureKey =
-  | 'acousticness'
-  | 'danceability'
-  | 'energy'
-  | 'instrumentalness'
-  | 'liveness'
-  | 'speechiness'
-  | 'valence';
-
-export type FeatureKey = AudioFeatureKey | 'popularity';
-
