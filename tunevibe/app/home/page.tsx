@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import "@/styles/globals.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,7 @@ import { CloudIcon, DownloadIcon, ShareIcon, UserIcon } from "lucide-react";
 import NavBar from "@/NavBar";
 import { signIn, signOut, useSession } from "next-auth/react";
 import MoodChart from "@/mood-chart/page";
-
+import { usePlaylistHandler } from "@/lib/playlistHandler";
 // import { fetchPlaylist, PlaylistData } from "@/utils/fetchPlaylist";
 // import { PlaylistAudioFeatures } from "@/utils/types";
 
@@ -36,14 +35,11 @@ export default function Home() {
   ];
 
   const [playlistUrl, setPlaylistUrl] = useState("");
-  const [playlistData, setPlaylistData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const extractPlaylistId = (url: string) => {
-    const match = url.match(/playlist\/(\w+)/);
-    return match ? match[1] : null;
-  };
-
+  const { playlistData, isLoading, error, handleFetchPlaylist } =
+    usePlaylistHandler(); // Destructure values from the custom hook
+  // nextauth
+  const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(true); // Initialize loading state
   // const handleFetchPlaylist = async () => {
   //     setIsLoading(true);
   //     setPlaylistData(null);
@@ -63,29 +59,43 @@ export default function Home() {
   //     setIsLoading(false);
   // };
 
-  const handleFetchPlaylist = async () => {
-    setIsLoading(true);
-    setPlaylistData(null);
-
-    const playlistId = extractPlaylistId(playlistUrl);
-    if (playlistId) {
-      try {
-        const response = await axios.get(`/api/playlist/${playlistId}`);
-        const data = response.data;
-        setPlaylistData(data);
-        console.log(data);
-      } catch (error: any) {
-        console.error("Error fetching playlist data:", error);
-        // set error status
-      }
-    } else {
-      console.error("Invalid Spotify URL");
-      // set error status
+  // Fetch playlists on component mount
+  useEffect(() => {
+    // Update loading state based on session status
+    if (status !== "loading") {
+      setLoading(false);
     }
-    setIsLoading(false);
-  };
-  // nextauth
-  const { data: session, status } = useSession();
+  }, [status]); // Re-run this effect when the session status changes
+
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      if (status === "authenticated") {
+        // Check if the user is authenticated
+        const response = await fetch("/api/getPlayList"); // Replace with your actual endpoint
+        const data = await response.json();
+
+        if (response.ok) {
+          handleFetchPlaylist(data.url); // Set the playlist URL from the fetched data
+        } else {
+          console.error(data.error); // Handle error appropriately
+        }
+      } else {
+        console.log("User is not logged in."); // Log or handle the case when the user is not authenticated
+      }
+    };
+
+    if (!loading) {
+      fetchPlaylists(); // Only fetch playlists if loading is false
+    }
+  }, [loading, status]); // Include loading and status in the dependency array
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="loader"></div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-background text-foreground">
       <NavBar />
@@ -144,11 +154,14 @@ export default function Home() {
               <div className="flex space-x-4">
                 <Button
                   className="flex items-center"
-                  onClick={handleFetchPlaylist}
+                  onClick={() => handleFetchPlaylist(playlistUrl)} // Use the handler from the custom hook
+                  disabled={isLoading} // Disable button if loading
                 >
-                  Analyse
+                  {isLoading ? "Loading..." : "Analyse"}
                 </Button>
               </div>
+              {error && <p className="text-red-500 mt-4">{error}</p>}{" "}
+              {/* Show error if exists */}
             </section>
 
             <section className="mb-8">
@@ -162,8 +175,13 @@ export default function Home() {
                 </TabsList>
                 <TabsContent value="moodchart">
                   <div className="h-full bg-muted rounded-lg items-center p-5">
-                    {playlistData === null ?  (<h2 className="text-center text-xl font-semibold m-4">:)</h2>) : 
-                                              (<MoodChart data={playlistData} />)}
+                    {playlistData === null ? (
+                      <h2 className="text-center text-xl font-semibold m-4">
+                        :)
+                      </h2>
+                    ) : (
+                      <MoodChart data={playlistData} />
+                    )}
                   </div>
                 </TabsContent>
                 <TabsContent value="wordcloud">

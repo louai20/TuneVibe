@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { PrismaClient } from "@prisma/client";
 
-let prisma: PrismaClient;
+export const db = new PrismaClient();
 
 declare global {
   namespace NodeJS {
@@ -19,5 +19,3 @@ if (process.env.NODE_ENV == "production") {
   }
   prisma = global.prisma;
 }
-
-export default prisma;

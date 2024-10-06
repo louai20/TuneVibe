@@ -16,9 +16,8 @@ model User {
 
 
 model Playlist {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  title        String
-  image        String?
-  uri          String @unique
-  addedBy      String
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  url      String   // Store the external Spotify URL
+  createdAt DateTime @default(now())
 }

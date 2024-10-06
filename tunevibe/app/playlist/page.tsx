@@ -16,6 +16,7 @@ type Playlist = {
   description?: string;
   images?: { url: string }[]; // Added images property for album images
   tracks?: Track[]; // Optional tracks for each playlist
+  external_urls: { spotify: string }; // External URLs for the playlist
 };
 
 export default function Playlists() {
@@ -122,6 +123,33 @@ const PlaylistCard = ({ playlist }: { playlist: Playlist }) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter(); // Initialize router for navigation
 
+  const analyzePlaylist = async () => {
+    // First, save the playlist URL in the database
+    try {
+      const response = await fetch("/api/savePlayList", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: playlist.name,
+          url: playlist.external_urls.spotify, // Save the external URL
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save playlist");
+      }
+      const data = await response.json();
+      console.log("Playlist saved successfully!", data);
+
+      // After saving, navigate to the home page
+      router.push(`/home`); // Navigate to home without URL
+    } catch (error) {
+      console.error("Error saving playlist:", error);
+    }
+  };
+
   return (
     <div className="bg-gray-800 rounded-lg p-4">
       <div className="flex items-center justify-between">
@@ -171,13 +199,7 @@ const PlaylistCard = ({ playlist }: { playlist: Playlist }) => {
       )}
 
       <button
-        onClick={() =>
-          router.push(
-            `/home?playlistUrl=${encodeURIComponent(
-              playlist.external_urls.spotify
-            )}`
-          )
-        } // Change `/analyze/${playlist.id}` to your actual analyze page route
+        onClick={analyzePlaylist} // Call analyzePlaylist to route to home
         className="mt-4 bg-green-500 text-white py-2 px-4 rounded-full"
       >
         Analyze Playlist
