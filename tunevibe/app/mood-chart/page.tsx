@@ -10,41 +10,37 @@ export default function MoodChart({ data }: any) {
     const chartData = getChartData(data);
 
     return (
-         <div className="h-full bg-muted rounded-lg items-center p-5">
-            {data === null ? (<h2 className="text-center text-xl font-semibold m-4">:)</h2>) : (
-                <div>
-                    <h2 className="text-center text-xl font-semibold m-4">{data?.description}</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+            <div>
+                <h2 className="text-center text-xl font-semibold m-4">{data?.description}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
 
-                        <Table.Root size="1" className='h-72'>
-                            <Table.Body>
+                    <Table.Root size="1" className='h-72'>
+                        <Table.Body>
 
-                                    {data.tracks.items.map((item: any, index:any) => (
-                                        <Table.Row key={index}>
-                                            <Table.Cell>
-                                            <Avatar src={item.track.album.images[2].url} size="1" fallback="A" radius="large" />
-                                            </Table.Cell>
-                                            <Table.Cell>{item.track.name}</Table.Cell>
-                                            <Table.Cell>
-                                                <Flex gap="1">
-                                                    <Badge color="green" radius="large">Danceability {Math.round((data.audioFeatures[index].danceability)*100)}%</Badge>
-                                                     <Badge color="yellow" radius="large">Liveness {Math.round((data.audioFeatures[index].liveness)*100)}%</Badge>
-                                                </Flex>
-                                            </Table.Cell>
-                                        </Table.Row>
-                                    ))}
-                            </Table.Body>
-                        </Table.Root>
+                                {data.tracks.items.map((item: any, index:any) => (
+                                    <Table.Row key={index}>
+                                        <Table.Cell>
+                                        <Avatar src={item.track.album.images[2].url} size="1" fallback="A" radius="large" />
+                                        </Table.Cell>
+                                        <Table.Cell>{item.track.name}</Table.Cell>
+                                        <Table.Cell>
+                                            <Flex gap="1">
+                                                <Badge color="green" radius="large">Danceability {Math.round((data.audioFeatures[index].danceability)*100)}%</Badge>
+                                                    <Badge color="yellow" radius="large">Liveness {Math.round((data.audioFeatures[index].liveness)*100)}%</Badge>
+                                            </Flex>
+                                        </Table.Cell>
+                                    </Table.Row>
+                                ))}
+                        </Table.Body>
+                    </Table.Root>
 
-                        <div className="flex flex-col justify-center items-center">
-                            <div className='h-72'>
-                                <Doughnut data={chartData} />
-                            </div>
+                    <div className="flex flex-col justify-center items-center">
+                        <div className='h-72'>
+                            <Doughnut data={chartData} />
                         </div>
                     </div>
-                </div>)
-            }
-        </div>
+                </div>
+            </div>
     );
 }
 
