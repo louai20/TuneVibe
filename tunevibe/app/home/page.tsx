@@ -161,7 +161,10 @@ export default function Home() {
                   <TabsTrigger value="wordcloud">Word Cloud</TabsTrigger>
                 </TabsList>
                 <TabsContent value="moodchart">
-                  <MoodChart data={playlistData} />
+                  <div className="h-full bg-muted rounded-lg items-center p-5">
+                    {playlistData === null ?  (<h2 className="text-center text-xl font-semibold m-4">:)</h2>) : 
+                                              (<MoodChart data={playlistData} />)}
+                  </div>
                 </TabsContent>
                 <TabsContent value="wordcloud">
                   <WordCloud words={sampleWords} />
