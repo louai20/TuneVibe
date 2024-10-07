@@ -140,7 +140,7 @@ export default function Home() {
                   <TabsTrigger value="bubblechart">Bubble Chart</TabsTrigger>
                 </TabsList>
                 <TabsContent value="moodchart">
-                  {
+                  {/* {
                     <div className="h-full bg-muted rounded-lg items-center p-5">
                       {playlistData === null ? (
                         <h2 className="text-center text-xl font-semibold m-4">
@@ -150,7 +150,7 @@ export default function Home() {
                         <MoodChart data={playlistData} />
                       )}
                     </div>
-                  }
+                  } */}
                 </TabsContent>
                 <TabsContent value="bubblechart">
                   <div className="h-full bg-muted rounded-lg items-center p-5">
