@@ -4,12 +4,12 @@ import "@/styles/globals.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import { CloudIcon, DownloadIcon, ShareIcon, UserIcon } from "lucide-react";
 import NavBar from "@/NavBar";
 import { signIn, signOut, useSession } from "next-auth/react";
 import MoodChart from "@/mood-chart/page";
 import { usePlaylistHandler } from "@/lib/playlistHandler";
+import BubbleChart from "@/components/BubbleChart";
 // import { fetchPlaylist, PlaylistData } from "@/utils/fetchPlaylist";
 // import { PlaylistAudioFeatures } from "@/utils/types";
 
@@ -40,24 +40,6 @@ export default function Home() {
   // nextauth
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(true); // Initialize loading state
-  // const handleFetchPlaylist = async () => {
-  //     setIsLoading(true);
-  //     setPlaylistData(null);
-
-  //     const playlistId = extractPlaylistId(playlistUrl);
-  //     if (playlistId) {
-  //         try {
-  //             const data = await fetchPlaylist(playlistId);
-  //             setPlaylistData(data);
-  //             console.log(data);
-  //         } catch (error) {
-  //             console.error("Error fetching playlist data:", error);
-  //         }
-  //     } else {
-  //         console.error("Invalid Spotify URL");
-  //     }
-  //     setIsLoading(false);
-  // };
 
   // Fetch playlists on component mount
   useEffect(() => {
@@ -102,22 +84,6 @@ export default function Home() {
 
       <main className="container mx-auto px-4 py-8">
         {
-          // showProfile ? (
-          //   <section className="mb-8">
-          //     <h2 className="text-xl font-semibold mb-4">My Profile</h2>
-          //     <div className="bg-card text-card-foreground rounded-lg p-4">
-          //       <h3 className="font-semibold mb-2">John Doe</h3>
-          //       <p className="text-sm text-muted-foreground mb-4">john.doe@example.com</p>
-          //       <h4 className="font-semibold mb-2">My Playlists</h4>
-          //       <ul className="list-disc list-inside">
-          //         <li>Summer Hits 2023</li>
-          //         <li>Workout Mix</li>
-          //         <li>Chill Vibes</li>
-          //       </ul>
-          //       <Button className="mt-4" onClick={() => setShowProfile(false)}>Back to Analysis</Button>
-          //     </div>
-          //   </section>
-          // ) : (
           <>
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4">
@@ -171,21 +137,31 @@ export default function Home() {
               <Tabs defaultValue="moodchart">
                 <TabsList>
                   <TabsTrigger value="moodchart">Mood Chart</TabsTrigger>
-                  <TabsTrigger value="wordcloud">Word Cloud</TabsTrigger>
+                  <TabsTrigger value="bubblechart">Bubble Chart</TabsTrigger>
                 </TabsList>
                 <TabsContent value="moodchart">
+                  {
+                    <div className="h-full bg-muted rounded-lg items-center p-5">
+                      {playlistData === null ? (
+                        <h2 className="text-center text-xl font-semibold m-4">
+                          :)
+                        </h2>
+                      ) : (
+                        <MoodChart data={playlistData} />
+                      )}
+                    </div>
+                  }
+                </TabsContent>
+                <TabsContent value="bubblechart">
                   <div className="h-full bg-muted rounded-lg items-center p-5">
                     {playlistData === null ? (
                       <h2 className="text-center text-xl font-semibold m-4">
                         :)
                       </h2>
                     ) : (
-                      <MoodChart data={playlistData} />
+                      <BubbleChart data={playlistData.tracks.items} />
                     )}
                   </div>
-                </TabsContent>
-                <TabsContent value="wordcloud">
-                  <WordCloud words={sampleWords} />
                 </TabsContent>
               </Tabs>
             </section>
