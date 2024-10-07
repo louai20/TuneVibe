@@ -65,27 +65,25 @@ const BubbleChart: React.FC<BubbleChartProps> = ({ data }) => {
     datasets: [
       {
         label: "",
-        data: data.map((item) => {
-          const audioFeatures = item.audioFeatures || {}; // Fallback to empty object if audioFeatures is undefined
-          return {
-            x:
-              xFeature === "popularity"
-                ? item.track.popularity
-                : audioFeatures[xFeature as AudioFeatureKey] || 0, // Fallback to 0 if missing
-            y:
-              yFeature === "popularity"
-                ? item.track.popularity
-                : audioFeatures[yFeature as AudioFeatureKey] || 0, // Fallback to 0 if missing
-            r:
-              sizeFeature === "popularity"
-                ? item.track.popularity / 5
-                : (audioFeatures[sizeFeature as AudioFeatureKey] || 0) * 10, // Fallback to 0 if missing
-          };
-        }),
+        data: data.map((item) => ({
+          x:
+            xFeature === "popularity"
+              ? item.track.popularity
+              : item.audioFeatures[xFeature as AudioFeatureKey],
+          y:
+            yFeature === "popularity"
+              ? item.track.popularity
+              : item.audioFeatures[yFeature as AudioFeatureKey],
+          r:
+            sizeFeature === "popularity"
+              ? item.track.popularity / 5
+              : item.audioFeatures[sizeFeature as AudioFeatureKey] * 10,
+        })),
         backgroundColor: "rgba(75,192,192,0.4)",
       },
     ],
   };
+
   const options: ChartOptions<"bubble"> = {
     scales: {
       x: {
