@@ -1,6 +1,6 @@
 // In your /app/api/savePlaylist/route.ts
 import { NextResponse } from "next/server";
-import { db } from "../../prisma/index";
+import { db } from "../../../prisma/index";
 
 export async function POST(req: Request) {
   try {
