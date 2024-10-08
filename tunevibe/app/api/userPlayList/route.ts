@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/api/auth/[...nextauth]/route";
+import { authOptions } from "@/utils/authOptions";
 
 // Define the expected structure of the playlists response
 interface SpotifyPlaylist {
@@ -35,6 +35,8 @@ export async function GET(req: NextRequest) {
 
     // Check for a successful response
     if (!response.ok) {
+      const errorBody = await response.json(); // Log the error response body
+      console.error("Spotify API error response:", errorBody);
       throw new Error(`Spotify API error: ${response.statusText}`);
     }
 

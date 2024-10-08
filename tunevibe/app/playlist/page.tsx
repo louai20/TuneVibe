@@ -8,6 +8,10 @@ type Track = {
   id: string;
   name: string;
   artists: { name: string }[]; // Artists is an array
+  href: string;
+  album: {
+    images: { url: string }[]; // Add album images here
+  };
 };
 
 type Playlist = {
@@ -15,7 +19,12 @@ type Playlist = {
   name: string;
   description?: string;
   images?: { url: string }[]; // Added images property for album images
-  tracks?: Track[]; // Optional tracks for each playlist
+  tracks: {
+    // reflect the API response
+    href: string; // URL to fetch the tracks
+    total: number;
+    items: Track[]; // An array of tracks
+  };
   external_urls: { spotify: string }; // External URLs for the playlist
 };
 
@@ -44,11 +53,21 @@ export default function Playlists() {
         if (isMounted) {
           const playlistsWithTracks = await Promise.all(
             data.items.map(async (playlist: Playlist) => {
-              const tracksResponse = await fetch(playlist.tracks?.href, {
+              // Check if tracks is defined before accessing href
+              if (!playlist.tracks) {
+                throw new Error("Tracks are undefined");
+              }
+
+              const tracksResponse = await fetch(playlist.tracks.href, {
                 headers: {
                   Authorization: `Bearer ${session?.accessToken}`, // Use session access token if required
                 },
               });
+
+              if (!tracksResponse.ok) {
+                throw new Error("Failed to fetch tracks");
+              }
+
               const tracksData = await tracksResponse.json();
 
               // Filter out duplicate tracks based on track ID
@@ -57,16 +76,20 @@ export default function Playlists() {
               ).map((id) => {
                 return tracksData.items.find(
                   (track: any) => track.track.id === id
-                ).track;
+                )?.track; // Make sure to check for undefined
               });
 
               return {
                 ...playlist,
-                tracks: uniqueTracks.map((track: any) => ({
-                  id: track.id,
-                  name: track.name,
-                  artists: track.artists,
-                })),
+                tracks: {
+                  href: playlist.tracks.href, // Include the href from playlist.tracks
+                  total: tracksData.total, // Total number of tracks
+                  items: uniqueTracks.map((track: any) => ({
+                    id: track.id,
+                    name: track.name,
+                    artists: track.artists,
+                  })),
+                },
               };
             })
           );
@@ -184,11 +207,19 @@ const PlaylistCard = ({ playlist }: { playlist: Playlist }) => {
             <div className="p-2 w-full">Artist</div>
           </div>
 
-          {playlist.tracks?.map((track) => (
+          {playlist.tracks?.items.map((track) => (
             <div
               key={track.id}
               className="flex border-b border-gray-600 hover:bg-gray-700"
             >
+              {/* Render track image if available */}
+              {track.album.images?.[0]?.url && (
+                <img
+                  src={track.album.images[0].url}
+                  alt={track.name}
+                  className="w-10 h-10 rounded-md mr-4" // Adjust size as needed
+                />
+              )}
               <div className="p-3 w-full">{track.name}</div>
               <div className="p-3 w-full">
                 {track.artists.map((artist) => artist.name).join(", ")}
