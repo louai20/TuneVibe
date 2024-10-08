@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./styles/globals.css";
 import { Providers } from "./components/provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
@@ -40,7 +41,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Theme>
-            <Providers>{children}</Providers>
+            <Providers>{children}<SpeedInsights /></Providers>
           </Theme>
         </ThemeProvider>
       </body>
