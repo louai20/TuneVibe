@@ -4,11 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx prisma db push  && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
-    "vercel-build": "npx prisma db push  && prisma generate && next build"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@nextui-org/react": "^2.4.8",
