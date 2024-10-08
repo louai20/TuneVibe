@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && prisma db push && next build"
+    "vercel-build": "npx prisma db push  && prisma generate && next build"
   },
   "dependencies": {
     "@nextui-org/react": "^2.4.8",
