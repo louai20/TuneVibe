@@ -8,6 +8,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 
+import { Toaster } from 'react-hot-toast'; 
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -45,6 +47,7 @@ export default function RootLayout({
           </Theme>
         </ThemeProvider>
         <SpeedInsights />
+        <Toaster />
       </body>
     </html>
   );
