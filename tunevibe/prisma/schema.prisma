@@ -14,10 +14,36 @@ model User {
   password String
 }
 
-
 model Playlist {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  url      String   // Store the external Spotify URL
-  createdAt DateTime @default(now())
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  tracks      Json          // store tracks data
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  visualizations Visualization[]
 }
+
+model Visualization {
+  id           String            @id @default(auto()) @map("_id") @db.ObjectId
+  type         VisualizationType
+  chartData    Json              // store Chart.js data
+  playlist     Playlist          @relation(fields: [playlistId], references: [id])
+  playlistId   String            @db.ObjectId
+  createdAt    DateTime          @default(now())
+}
+
+enum VisualizationType {
+  Bubble
+  Pie
+  // to add more 
+}
+
+
+
+// model Playlist {
+//   id       String   @id @default(auto()) @map("_id") @db.ObjectId
+//   name     String
+//   url      String   // Store the external Spotify URL
+//   createdAt DateTime @default(now())
+// }
