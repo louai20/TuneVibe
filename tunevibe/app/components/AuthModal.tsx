@@ -2,11 +2,11 @@
 
 import React from "react";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,180 +14,221 @@ import useStore from "@/store/useStore";
 import { signIn } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 type AuthMode = "login" | "register";
 
 const AuthModal: React.FC = () => {
-    const {
-        authModal: { isOpen, mode },
-        closeAuthModal,
-        openAuthModal,
-        loginEmail,
-        setLoginEmail,
-        loginPassword,
-        setLoginPassword,
-        registerName,
-        setRegisterName,
-        registerEmail,
-        setRegisterEmail,
-        registerPassword,
-        setRegisterPassword,
-        error,
-        setError,
-    } = useStore();
+  const {
+    authModal: { isOpen, mode },
+    closeAuthModal,
+    openAuthModal,
+    setError,
+    error,
+  } = useStore();
 
-    const router = useRouter();
+  const router = useRouter();
 
-    if (!isOpen || !mode) return null;
+  if (!isOpen || !mode) return null;
 
-    const handleLogin = async () => {
-        const res = await signIn("credentials", {
-            redirect: false,
-            email: loginEmail,
-            password: loginPassword,
+  const switchMode = () => {
+    if (mode === "login") {
+      openAuthModal("register");
+    } else {
+      openAuthModal("login");
+    }
+    setError("");
+  };
+
+  const initialValues =
+    mode === "login"
+      ? {
+          email: "",
+          password: "",
+        }
+      : {
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        };
+
+  const LoginSchema = Yup.object().shape({
+    email: Yup.string().email("Invalid email").required("Required"),
+    password: Yup.string().required("Required"),
+  });
+
+  const RegisterSchema = Yup.object().shape({
+    name: Yup.string().required("Required"),
+    email: Yup.string().email("Invalid email").required("Required"),
+    password: Yup.string().required("Required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), undefined], "Passwords must match")
+      .required("Required"),
+  });
+  
+
+  const handleLogin = async (values: any) => {
+    const { email, password } = values;
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (res?.error) {
+      setError(res.error);
+    } else {
+      closeAuthModal();
+      setError("");
+      toast.success("Login Succeeded！");
+      router.push("/home");
+    }
+  };
+
+  const handleRegister = async (values: any) => {
+    const { name, email, password } = values;
+
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Register Failed");
+      } else {
+        // Auto login
+        const signInRes = await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
         });
 
-        if (res?.error) {
-            setError(res.error);
+        if (signInRes?.error) {
+          setError(signInRes.error);
         } else {
-            closeAuthModal();
-            setError("");
-            toast.success("Login Succeeded！");
-            router.push("/home");
+          closeAuthModal();
+          setError("");
+          toast.success("Register and Login Succeeded！");
+          router.push("/home");
         }
-    };
+      }
+    } catch (err) {
+      setError("An error occurred during registration");
+    }
+  };
 
-    const handleRegister = async () => {
-        try {
-            const res = await fetch("/api/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: registerName,
-                    email: registerEmail,
-                    password: registerPassword,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.error || "Register Failed");
-            } else {
-                // auto login
-                const signInRes = await signIn("credentials", {
-                    redirect: false,
-                    email: registerEmail,
-                    password: registerPassword,
-                });
-
-                if (signInRes?.error) {
-                    setError(signInRes.error);
-                } else {
-                    closeAuthModal();
-                    setError("");
-                    toast.success("Register and Login Succeeded！");
-                    router.push("/home");
-                }
-            }
-        } catch (err) {
-            setError("An error occurred during registration");
-        }
-    };
-
-    const switchMode = () => {
-        if (mode === "login") {
-            openAuthModal("register");
-        } else {
-            openAuthModal("login");
-        }
-        setError("");
-    };
-
-    return (
-        <Dialog open={isOpen} onOpenChange={closeAuthModal}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>
-                        {mode === "login" ? "Login" : "Sign Up"}
-                    </DialogTitle>
-                    <DialogDescription>
-                        {mode === "login"
-                            ? "Enter your email and password to login."
-                            : "Create a new account by filling out the information below."}
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    {error && <p className="text-red-500">{error}</p>}
-                    {mode === "register" && (
-                        <Input
-                            id="register-name"
-                            placeholder="Name"
-                            value={registerName}
-                            onChange={(e) => setRegisterName(e.target.value)}
-                        />
-                    )}
-                    <Input
-                        id={mode === "login" ? "login-email" : "register-email"}
-                        placeholder="Email"
-                        value={mode === "login" ? loginEmail : registerEmail}
-                        onChange={(e) =>
-                            mode === "login"
-                                ? setLoginEmail(e.target.value)
-                                : setRegisterEmail(e.target.value)
-                        }
+  return (
+    <Dialog open={isOpen} onOpenChange={closeAuthModal}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {mode === "login" ? "Login" : "Sign Up"}
+          </DialogTitle>
+          <DialogDescription>
+            {mode === "login"
+              ? "Enter your email and password to login."
+              : "Create a new account by filling out the information below."}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          {error && <p className="text-red-500">{error}</p>}
+          <Formik
+            initialValues={initialValues}
+            validationSchema={mode === "login" ? LoginSchema : RegisterSchema}
+            onSubmit={mode === "login" ? handleLogin : handleRegister}
+          >
+            {({ isSubmitting }) => (
+              <Form className="space-y-4">
+                {mode === "register" && (
+                  <div>
+                    <Field
+                      as={Input}
+                      id="register-name"
+                      name="name"
+                      placeholder="Name"
                     />
-                    <Input
-                        id={
-                            mode === "login"
-                                ? "login-password"
-                                : "register-password"
-                        }
-                        type="password"
-                        placeholder="Password"
-                        value={
-                            mode === "login" ? loginPassword : registerPassword
-                        }
-                        onChange={(e) =>
-                            mode === "login"
-                                ? setLoginPassword(e.target.value)
-                                : setRegisterPassword(e.target.value)
-                        }
+                    <ErrorMessage
+                      name="name"
+                      component="div"
+                      className="text-red-500"
                     />
-                    {mode === "register" && (
-                        <Input
-                            id="register-password-confirm"
-                            type="password"
-                            placeholder="Confirm Password"
-                            // to add password confimation logic
-                        />
-                    )}
-                    <Button
-                        onClick={
-                            mode === "login" ? handleLogin : handleRegister
-                        }
-                    >
-                        {mode === "login" ? "Login" : "Sign Up"}
-                    </Button>
-                    <Button variant="outline" onClick={switchMode}>
-                        {mode === "login"
-                            ? "Don't have an account? Sign Up"
-                            : "Already have an account? Login"}
-                    </Button>
-                    {mode === "login" && (
-                        <Button
-                            variant="outline"
-                            onClick={() => signIn("spotify")}
-                        >
-                            Login with Spotify
-                        </Button>
-                    )}
+                  </div>
+                )}
+                <div>
+                  <Field
+                    as={Input}
+                    id="email"
+                    name="email"
+                    placeholder="Email"
+                  />
+                  <ErrorMessage
+                    name="email"
+                    component="div"
+                    className="text-red-500"
+                  />
                 </div>
-            </DialogContent>
-        </Dialog>
-    );
+                <div>
+                  <Field
+                    as={Input}
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                  />
+                  <ErrorMessage
+                    name="password"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+                {mode === "register" && (
+                  <div>
+                    <Field
+                      as={Input}
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      placeholder="Confirm Password"
+                    />
+                    <ErrorMessage
+                      name="confirmPassword"
+                      component="div"
+                      className="text-red-500"
+                    />
+                  </div>
+                )}
+                <Button type="submit" disabled={isSubmitting}>
+                  {mode === "login" ? "Login" : "Sign Up"}
+                </Button>
+              </Form>
+            )}
+          </Formik>
+          <Button variant="outline" onClick={switchMode}>
+            {mode === "login"
+              ? "Don't have an account? Sign Up"
+              : "Already have an account? Login"}
+          </Button>
+          {mode === "login" && (
+            <Button variant="outline" onClick={() => signIn("spotify")}>
+              Login with Spotify
+            </Button>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
 export default AuthModal;
