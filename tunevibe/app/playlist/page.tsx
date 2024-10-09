@@ -3,11 +3,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import { useSession } from "next-auth/react"; // Import useSession
+import { Flex, Avatar, Box } from "@radix-ui/themes";
+
+type Artist = {
+  name: string; // Define the type for artist
+};
 
 type Track = {
   id: string;
   name: string;
-  artists: { name: string }[]; // Artists is an array
+  artists: Artist[]; // Use the defined Artist type
   href: string;
   album: {
     images: { url: string }[]; // Add album images here
@@ -88,6 +93,7 @@ export default function Playlists() {
                     id: track.id,
                     name: track.name,
                     artists: track.artists,
+                    album: track.album, // Include album for image access
                   })),
                 },
               };
@@ -206,25 +212,32 @@ const PlaylistCard = ({ playlist }: { playlist: Playlist }) => {
             <div className="p-2 w-full">Title</div>
             <div className="p-2 w-full">Artist</div>
           </div>
-
           {playlist.tracks?.items.map((track) => (
-            <div
+            <Flex
               key={track.id}
-              className="flex border-b border-gray-600 hover:bg-gray-700"
+              gap="3"
+              align="center"
+              className="border-b border-gray-600 hover:bg-gray-700 p-3"
             >
-              {/* Render track image if available */}
-              {track.album.images?.[0]?.url && (
-                <img
-                  src={track.album.images[0].url}
-                  alt={track.name}
-                  className="w-10 h-10 rounded-md mr-4" // Adjust size as needed
-                />
-              )}
-              <div className="p-3 w-full">{track.name}</div>
-              <div className="p-3 w-full">
-                {track.artists.map((artist) => artist.name).join(", ")}
-              </div>
-            </div>
+              {/* Avatar for track image or fallback */}
+              <Avatar
+                src={track.album.images[2]?.url || undefined} // Use the smaller image or undefined if no image
+                size="2" // Increased size for larger avatar
+                fallback="A" // Fallback if no image
+                radius="large"
+              />
+
+              {/* Track details (name and artists) */}
+              <Box>
+                <div className="text-white">{track.name}</div>
+                <div className="text-sm text-gray-400">
+                  {track.artists
+                    .map((artist: Artist) => artist.name)
+                    .join(", ")}{" "}
+                  {/* Explicitly type 'artist' */}
+                </div>
+              </Box>
+            </Flex>
           ))}
         </div>
       )}
