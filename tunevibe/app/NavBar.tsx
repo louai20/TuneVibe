@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+
+import React from "react";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -11,84 +12,23 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UserIcon } from "lucide-react";
 import { ModeToggle } from "./components/ui/ModeToggle";
+import useStore from "@/store/useStore";
+import { toast } from "react-hot-toast";
+
+import AuthModal from "@/components/AuthModal";
 
 const NavBar = () => {
     const { data: session } = useSession();
+    const router = useRouter();
 
-    const [showLoginModal, setShowLoginModal] = useState(false);
-    const [showRegisterModal, setShowRegisterModal] = useState(false);
-
-    const [loginEmail, setLoginEmail] = useState("");
-    const [loginPassword, setLoginPassword] = useState("");
-
-    const [registerName, setRegisterName] = useState("");
-    const [registerEmail, setRegisterEmail] = useState("");
-    const [registerPassword, setRegisterPassword] = useState("");
-
-    const [error, setError] = useState("");
-
-    const handleLogin = async () => {
-        const res = await signIn("credentials", {
-            redirect: false,
-            email: loginEmail,
-            password: loginPassword,
-        });
-
-        if (res?.error) {
-            setError(res.error);
-        } else {
-            setShowLoginModal(false);
-            setError("");
-        }
-    };
-
-    const handleRegister = async () => {
-        try {
-            const res = await fetch("/api/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: registerName,
-                    email: registerEmail,
-                    password: registerPassword,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.error || "Failed to register");
-            } else {
-                // auto login after successfully register
-                await signIn("credentials", {
-                    redirect: false,
-                    email: registerEmail,
-                    password: registerPassword,
-                });
-                setShowRegisterModal(false);
-                setError("");
-            }
-        } catch (err) {
-            setError("An error occurred during registration");
-        }
-    };
+    const { openAuthModal, closeAuthModal, error, setError } = useStore();
 
     const handleLogout = async () => {
         await signOut({ callbackUrl: "/home" });
+        toast.success("Logout Succeeded！");
     };
 
     return (
@@ -140,14 +80,14 @@ const NavBar = () => {
                                 <Button
                                     variant="ghost"
                                     className="px-4 py-2 text-base hover:underline"
-                                    onClick={() => setShowLoginModal(true)}
+                                    onClick={() => openAuthModal("login")}
                                 >
                                     Login
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     className="px-4 py-2 text-base hover:underline"
-                                    onClick={() => setShowRegisterModal(true)}
+                                    onClick={() => openAuthModal("register")}
                                 >
                                     Sign Up
                                 </Button>
@@ -160,100 +100,7 @@ const NavBar = () => {
                 </div>
             </header>
 
-            {/* Login dialog */}
-            <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Login</DialogTitle>
-                        <DialogDescription>
-                            Enter your email and password to login.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        {error && <p className="text-red-500">{error}</p>}
-                        <Input
-                            id="login-email"
-                            placeholder="Email"
-                            value={loginEmail}
-                            onChange={(e) => setLoginEmail(e.target.value)}
-                        />
-                        <Input
-                            id="login-password"
-                            type="password"
-                            placeholder="Password"
-                            value={loginPassword}
-                            onChange={(e) => setLoginPassword(e.target.value)}
-                        />
-                        <Button onClick={handleLogin}>Login</Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => {
-                                setShowLoginModal(false);
-                                setShowRegisterModal(true);
-                            }}
-                        >
-                            Don't have an account? Sign Up
-                        </Button>
-                        {/* login via Spotify */}
-                        <Button
-                            variant="outline"
-                            onClick={() => signIn("spotify")}
-                        >
-                            Login with Spotify
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* register dialog */}
-            <Dialog
-                open={showRegisterModal}
-                onOpenChange={setShowRegisterModal}
-            >
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Sign Up</DialogTitle>
-                        <DialogDescription>
-                            Create a new account by filling out the information
-                            below.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        {error && <p className="text-red-500">{error}</p>}
-                        <Input
-                            id="register-name"
-                            placeholder="Name"
-                            value={registerName}
-                            onChange={(e) => setRegisterName(e.target.value)}
-                        />
-                        <Input
-                            id="register-email"
-                            placeholder="Email"
-                            value={registerEmail}
-                            onChange={(e) => setRegisterEmail(e.target.value)}
-                        />
-                        <Input
-                            id="register-password"
-                            type="password"
-                            placeholder="Password"
-                            value={registerPassword}
-                            onChange={(e) =>
-                                setRegisterPassword(e.target.value)
-                            }
-                        />
-                        <Button onClick={handleRegister}>Sign Up</Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => {
-                                setShowRegisterModal(false);
-                                setShowLoginModal(true);
-                            }}
-                        >
-                            Already have an account? Login
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
+            <AuthModal />
         </div>
     );
 };
