@@ -74,6 +74,72 @@ export async function POST(request: Request) {
     }
 }
 
+export async function GET(request: Request) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session || !session.user?.email) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const url = new URL(request.url);
+        const spotifyId = url.searchParams.get("spotifyId");
+
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email },
+            include: { savedPlaylists: true },
+        });
+
+        if (!user) {
+            return NextResponse.json(
+                { message: "User not found" },
+                { status: 404 }
+            );
+        }
+
+        if (spotifyId) {
+            // return specific playlist data
+            const playlist = user.savedPlaylists.find(
+                (pl: any) => pl.spotifyId === spotifyId
+            );
+
+            if (!playlist) {
+                return NextResponse.json(
+                    { message: "Playlist not found." },
+                    { status: 404 }
+                );
+            }
+
+            return NextResponse.json(playlist, { status: 200 });
+        } else {
+            // return all saved playlists
+            const profileData = {
+                name: user.name,
+                email: user.email,
+                savedPlaylists: user.savedPlaylists.map((playlist: any) => ({
+                    id: playlist.id,
+                    name: playlist.name,
+                    spotifyId: playlist.spotifyId,
+                    jsonData: playlist.jsonData,
+                    createdAt: playlist.createdAt,
+                    updatedAt: playlist.updatedAt,
+                })),
+            };
+
+            return NextResponse.json(profileData, { status: 200 });
+        }
+    } catch (error) {
+        console.error("Error fetching profile:", error);
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
+}
+
+
 // export async function GET(request: Request) {
 //     try {
 //         const session = await getServerSession(authOptions);
@@ -96,61 +162,29 @@ export async function POST(request: Request) {
 //             );
 //         }
 
-//         return NextResponse.json(user.savedPlaylists, { status: 200 });
+//         const profileData = {
+//             name: user.name,
+//             email: user.email,
+//             //   avatarUrl: user.avatarUrl || null,
+//             savedPlaylists: user.savedPlaylists.map((playlist: any) => ({
+//                 id: playlist.id,
+//                 name: playlist.name,
+//                 spotifyId: playlist.spotifyId,
+//                 jsonData: playlist.jsonData,
+//                 createdAt: playlist.createdAt,
+//                 updatedAt: playlist.updatedAt,
+//             })),
+//         };
+
+//         return NextResponse.json(profileData, { status: 200 });
 //     } catch (error) {
-//         console.error("Error fetching playlists:", error);
+//         console.error("Error fetching profile:", error);
 //         return NextResponse.json(
 //             { error: "Internal Server Error" },
 //             { status: 500 }
 //         );
 //     }
 // }
-
-export async function GET(request: Request) {
-    try {
-        const session = await getServerSession(authOptions);
-        if (!session || !session.user?.email) {
-            return NextResponse.json(
-                { message: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email },
-            include: { savedPlaylists: true },
-        });
-
-        if (!user) {
-            return NextResponse.json(
-                { message: "User not found" },
-                { status: 404 }
-            );
-        }
-
-        const profileData = {
-            name: user.name,
-            email: user.email,
-            //   avatarUrl: user.avatarUrl || null,
-            savedPlaylists: user.savedPlaylists.map((playlist: any) => ({
-                id: playlist.id,
-                name: playlist.name,
-                spotifyId: playlist.spotifyId,
-                jsonData: playlist.jsonData,
-                createdAt: playlist.createdAt,
-                updatedAt: playlist.updatedAt,
-            })),
-        };
-
-        return NextResponse.json(profileData, { status: 200 });
-    } catch (error) {
-        console.error("Error fetching profile:", error);
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
-    }
-}
 
 export async function DELETE(request: Request) {
     try {
