@@ -100,17 +100,63 @@ export default function Home() {
         );
     }
 
-    const handleSave = () => {
-        if (user) {
-            setIsSaved(!isSaved);
-            toast(
-                isSaved
-                    ? "Playlist removed from favorites. You can add it back anytime."
-                    : "Playlist saved to favorites. You can find it in your profile.",
-                { duration: 3000 }
+    // const handleSave = () => {
+    //     if (user) {
+    //         setIsSaved(!isSaved);
+    //         toast(
+    //             isSaved
+    //                 ? "Playlist removed from favorites. You can add it back anytime."
+    //                 : "Playlist saved to favorites. You can find it in your profile.",
+    //             { duration: 3000 }
+    //         );
+    //     } else {
+    //         setShowLoginModal(true);
+    //     }
+    // };
+
+    const handleSavePlaylistData = async () => {
+        if (!playlistData || !playlistData.name || !playlistData.id) {
+            toast.error(
+                "Please make sure the playlist name and Spotify ID are filled in and the data is obtained."
             );
-        } else {
-            setShowLoginModal(true);
+            return;
+        }
+
+        // // extract image url
+        // const image = playlistData.images[2].url
+
+
+        const payload = {
+            name: playlistData.name,
+            spotifyId: playlistData.id,
+            // image: image,
+            jsonData: playlistData,
+        };
+
+        try {
+            const response = await fetch("/api/userSavedPlaylists", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                toast.success(
+                    "The playlist data has been successfully saved to the database!"
+                );
+                setIsSaved(true);
+                // Reset the form or perform other operations
+                setPlaylistUrl("");
+                // If you need to reset playlistData, you can do it here
+                // setPlaylistData(null); // Adjust according to the implementation of usePlaylistHandler
+            } else {
+                const errorData = await response.json();
+                toast.error(`Save failed: ${errorData.message || "Unknown error"}`);
+            }
+        } catch (error) {
+            console.error("Error saving playlist data:", error);
+            toast.error("An error occurred during the save process. Please try again later.");
         }
     };
 
@@ -257,7 +303,7 @@ export default function Home() {
                                 <Button
                                     variant={isSaved ? "default" : "outline"}
                                     className="flex items-center"
-                                    onClick={handleSave}
+                                    onClick={handleSavePlaylistData}
                                 >
                                     <HeartIcon
                                         className={`mr-2 h-4 w-4 ${
