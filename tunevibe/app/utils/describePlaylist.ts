@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 interface AudioFeatures {
     danceability: number;
     energy: number;
@@ -25,34 +27,18 @@ interface PlaylistData {
 }
 
 export default function describePlaylist(playlist: PlaylistData): string {
-    let avgDanceability = 0;
-    let avgEnergy = 0;
-    let avgValence = 0;
-    let avgTempo = 0;
-    let avgAcousticness = 0;
-    let avgInstrumentalness = 0;
-    let avgLoudness = 0;
-    let trackCount = playlist.tracks.items.length;
+    const items = playlist.tracks.items;
+    const trackCount = items.length;
 
-    playlist.tracks.items.forEach(item => {
-        const features = item.audioFeatures;
-        avgDanceability += features.danceability;
-        avgEnergy += features.energy;
-        avgValence += features.valence;
-        avgTempo += features.tempo;
-        avgAcousticness += features.acousticness;
-        avgInstrumentalness += features.instrumentalness;
-        avgLoudness += features.loudness;
-    });
+    // Calculating averages using lodash
+    const avgDanceability = _.meanBy(items, item => item.audioFeatures.danceability);
+    const avgEnergy = _.meanBy(items, item => item.audioFeatures.energy);
+    const avgValence = _.meanBy(items, item => item.audioFeatures.valence);
+    const avgTempo = _.meanBy(items, item => item.audioFeatures.tempo);
+    const avgAcousticness = _.meanBy(items, item => item.audioFeatures.acousticness);
+    const avgInstrumentalness = _.meanBy(items, item => item.audioFeatures.instrumentalness);
+    const avgLoudness = _.meanBy(items, item => item.audioFeatures.loudness);
 
-    // Calculating averages
-    avgDanceability /= trackCount;
-    avgEnergy /= trackCount;
-    avgValence /= trackCount;
-    avgTempo /= trackCount;
-    avgAcousticness /= trackCount;
-    avgInstrumentalness /= trackCount;
-    avgLoudness /= trackCount;
 
     // Creating qualitative descriptions
     const energyDescription = avgEnergy > 0.7 ? "energetic and powerful" :
