@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import useStore from "@/store/useStore";
+import useStore, { User } from "@/store/useStore";
 import { signIn } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,7 @@ const AuthModal: React.FC = () => {
         authModal: { isOpen, mode },
         closeAuthModal,
         openAuthModal,
+        setUser,
         loginEmail,
         setLoginEmail,
         loginPassword,
@@ -50,6 +51,14 @@ const AuthModal: React.FC = () => {
         if (res?.error) {
             setError(res.error);
         } else {
+            // const userData: User = {
+            //     id: "user-id", 
+            //     name: "User Name", 
+            //     email: loginEmail,
+            // };
+
+            // setUser(userData); 
+
             closeAuthModal();
             setError("");
             toast.success("Login Succeeded！");
