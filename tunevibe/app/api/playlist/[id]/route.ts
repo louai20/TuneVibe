@@ -84,10 +84,17 @@ export async function GET(
         playlistData.tracks.items = updatedItems;
         return NextResponse.json(playlistData);
     } catch (error: any) {
-        console.error(
-            "Error fetching playlist data:",
-            error.response?.data || error
-        );
+        if (error.response && error.response.status === 429) {
+            console.error("Too Many Requests:", error.message);
+            const retryAfter = error.response.headers["retry-after"];
+            if (retryAfter) {
+                setTimeout(() => {
+                    // 
+                }, parseInt(retryAfter) * 1000); 
+            }
+        } else {
+            console.error("Error fetching data:", error);
+        }
         return NextResponse.json(
             {
                 error:
