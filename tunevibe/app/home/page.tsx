@@ -3,55 +3,14 @@ import { useState, useEffect } from "react";
 import "@/styles/globals.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-    CloudIcon,
-    DownloadIcon,
-    ShareIcon,
-    UserIcon,
-    HeartIcon,
-} from "lucide-react";
 import NavBar from "@/NavBar";
 import { signIn, signOut, useSession } from "next-auth/react";
-import MoodChart from "@/mood-chart/page";
 import { usePlaylistHandler } from "@/lib/playlistHandler";
-import BubbleChart from "@/components/BubbleChart";
-import describePlaylist from "@/utils/describePlaylist";
 import useStore from "@/store/useStore";
 import { toast } from "react-hot-toast";
-// import { fetchPlaylist, PlaylistData } from "@/utils/fetchPlaylist";
-// import { PlaylistAudioFeatures } from "@/utils/types";
-
-// Assume we have a WordCloud component
-// const WordCloud = ({ words }: { words: string[] }) => (
-//     <div className="h-64 bg-muted rounded-lg flex items-center justify-center">
-//         <CloudIcon className="w-12 h-12 text-muted-foreground" />
-//         <span className="ml-2 text-muted-foreground">
-//             Word Cloud Placeholder
-//         </span>
-//     </div>
-// );
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-    // This would be populated with actual data in a real application
-    const sampleWords = [
-        "love",
-        "heartbreak",
-        "dance",
-        "party",
-        "sad",
-        "happy",
-    ];
-    const sampleTracks = [
-        { title: "Happy", artist: "Pharrell Williams", mood: "Joyful" },
-        { title: "Someone Like You", artist: "Adele", mood: "Melancholic" },
-        {
-            title: "Uptown Funk",
-            artist: "Mark Ronson ft. Bruno Mars",
-            mood: "Energetic",
-        },
-    ];
-
     const { user, theme, setUser, toggleTheme } = useStore();
     const isLoggedIn = !!user;
 
@@ -60,146 +19,68 @@ export default function Home() {
         usePlaylistHandler(); // Destructure values from the custom hook
     // nextauth
     const { data: session, status } = useSession();
-    const [loading, setLoading] = useState(true); // Initialize loading state
-    const [isSaved, setIsSaved] = useState(false);
 
-    const { openAuthModal, closeAuthModal } = useStore();
+    // const router = useRouter(); // Initialize useRouter
 
-    // Fetch playlists on component mount
-    useEffect(() => {
-        // Update loading state based on session status
-        if (status !== "loading") {
-            setLoading(false);
-        }
-    }, [status]); // Re-run this effect when the session status changes
-
-    useEffect(() => {
-        const fetchPlaylists = async () => {
-            if (status === "authenticated") {
-                // Check if the user is authenticated
-                const response = await fetch("/api/getPlayList"); // Replace with your actual endpoint
-                const data = await response.json();
-
-                if (response.ok) {
-                    handleFetchPlaylist(data.url); // Set the playlist URL from the fetched data
-                } else {
-                    console.error(data.error); // Handle error appropriately
-                }
-            } else {
-                console.log("User is not logged in."); // Log or handle the case when the user is not authenticated
-            }
-        };
-
-        if (!loading) {
-            fetchPlaylists(); // Only fetch playlists if loading is false
-        }
-    }, [loading, status]); // Include loading and status in the dependency array
-
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="loader"></div>
-            </div>
-        );
-    }
-
-    // const handleSave = () => {
-    //     if (user) {
-    //         setIsSaved(!isSaved);
-    //         toast(
-    //             isSaved
-    //                 ? "Playlist removed from favorites. You can add it back anytime."
-    //                 : "Playlist saved to favorites. You can find it in your profile.",
-    //             { duration: 3000 }
-    //         );
-    //     } else {
-    //         setShowLoginModal(true);
-    //     }
+    // const extractPlaylistId = (url: string) => {
+    //     const match = url.match(/playlist\/([a-zA-Z0-9]+)/);
+    //     return match ? match[1] : null;
     // };
 
-    const handleSavePlaylistData = async () => {
-        if (!playlistData || !playlistData.name || !playlistData.id) {
-            toast.error(
-                "Please make sure the playlist name and Spotify ID are filled in and the data is obtained."
-            );
-            return;
-        }
-
-        // // extract image url
-        // const image = playlistData.images[2].url
-
-        const payload = {
-            name: playlistData.name,
-            spotifyId: playlistData.id,
-            // image: image,
-            jsonData: playlistData,
-        };
-
-        try {
-            const response = await fetch("/api/userSavedPlaylists", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                toast.success(
-                    "The playlist data has been successfully saved to the database!"
-                );
-                setIsSaved(true);
-                // Reset the form or perform other operations
-                setPlaylistUrl("");
-                // If you need to reset playlistData, you can do it here
-                // setPlaylistData(null); // Adjust according to the implementation of usePlaylistHandler
-            } else {
-                const errorData = await response.json();
-                toast.error(
-                    `Save failed: ${errorData.message || "Unknown error"}`
-                );
-            }
-        } catch (error) {
-            console.error("Error saving playlist data:", error);
-            toast.error(
-                "An error occurred during the save process. Please try again later."
-            );
-        }
-    };
+    // const handleAnalyse = async () => {
+    //     const playlistId = extractPlaylistId(playlistUrl);
+    //     if (playlistId) {
+    //         try {
+    //             handleFetchPlaylist(playlistUrl);
+    //             router.push(`/analysis/${playlistId}`);
+    //         } catch (error: any) {
+    //             console.error("Error navigating to analysis page:", error);
+    //             toast.error("An error occurred. Please try again.");
+    //         }
+    //     }
+    // };
 
     return (
         <div className="min-h-screen bg-background text-foreground">
             <NavBar />
 
             <main className="container mx-auto px-4 py-8">
-                {
-                    <>
-                        <section className="mb-8">
-                            <h2 className="text-xl font-semibold mb-4">
-                                Import or Select Music
-                            </h2>
-                            <div className="flex space-x-4 mb-4">
-                                <div>
-                                    {status === "authenticated" ? (
-                                        <Button
-                                            className="flex items-center"
-                                            type="button"
-                                            onClick={() =>
-                                                signOut({ callbackUrl: "/" })
-                                            }
-                                        >
-                                            Imported from {session.user?.name}{" "}
-                                            <br /> Sign out
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            className="flex items-center"
-                                            onClick={() => signIn("spotify")}
-                                            disabled={status === "loading"}
-                                        >
-                                            Import from Spotify
-                                        </Button>
-                                    )}
-                                </div>
+                <section className="text-center mb-12">
+                    <h2 className="text-4xl font-bold mb-4">
+                        Discover the Data of Your Music
+                    </h2>
+                    <p className="text-xl mb-8">
+                        Analyze your playlists, understand your musical taste,
+                        and explore new songs that match your mood.
+                    </p>
+                </section>
+
+                <section className="mb-12">
+                    <div className="max-w-2xl mx-auto">
+                        <div className="flex items-center space-x-4 mb-4">
+                            <div>
+                                {status === "authenticated" ? (
+                                    <Button
+                                        className="flex items-center"
+                                        type="button"
+                                        onClick={() =>
+                                            signOut({ callbackUrl: "/" })
+                                        }
+                                    >
+                                        Imported from {session.user?.name}{" "}
+                                        <br /> Sign out
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        className="flex items-center"
+                                        onClick={() => signIn("spotify")}
+                                        disabled={status === "loading"}
+                                    >
+                                        Import from Spotify
+                                    </Button>
+                                )}
+                            </div>
+                            <div className="flex-grow relative">
                                 <Input
                                     type="text"
                                     value={playlistUrl}
@@ -210,147 +91,109 @@ export default function Home() {
                                     className="flex-grow"
                                 />
                             </div>
-                            <div className="flex space-x-4">
-                                <Button
-                                    className="flex items-center"
-                                    onClick={() =>
-                                        handleFetchPlaylist(playlistUrl)
-                                    } // Use the handler from the custom hook
-                                    disabled={isLoading} // Disable button if loading
-                                >
-                                    {isLoading ? "Loading..." : "Analyse"}
-                                </Button>
-                            </div>
-                            {error && (
-                                <p className="text-red-500 mt-4">{error}</p>
-                            )}{" "}
-                            {/* Show error if exists */}
-                        </section>
+                        </div>
+                        <Button
+                            className="w-full"
+                            onClick={() =>
+                                handleFetchPlaylist(playlistUrl)
+                            } // Use the handler from the custom hook
+                            disabled={isLoading} // Disable button if loading
+                        >
+                            {isLoading ? "Loading..." : "Analyse Playlist"}
+                        </Button>
+                    </div>
+                </section>
 
-                        <section className="mb-8">
-                            <h2 className="text-xl font-semibold mb-4">
-                                Mood and Lyrics Analysis
-                            </h2>
-                            <Tabs defaultValue="moodchart">
-                                <TabsList>
-                                    <TabsTrigger value="moodchart">
-                                        Mood Chart
-                                    </TabsTrigger>
-                                    <TabsTrigger value="bubblechart">
-                                        Bubble Chart
-                                    </TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="moodchart">
-                                    {
-                                        <div className="h-full bg-muted rounded-lg items-center p-5">
-                                            {playlistData === null ? (
-                                                <h2 className="text-center text-xl font-semibold m-4">
-                                                    :)
-                                                </h2>
-                                            ) : (
-                                                <MoodChart
-                                                    data={playlistData}
-                                                />
-                                            )}
-                                        </div>
-                                    }
-                                </TabsContent>
-                                <TabsContent value="bubblechart">
-                                    <div className="h-full bg-muted rounded-lg items-center p-5">
-                                        {playlistData === null ? (
-                                            <h2 className="text-center text-xl font-semibold m-4">
-                                                :)
-                                            </h2>
-                                        ) : (
-                                            <BubbleChart
-                                                data={playlistData.tracks.items}
-                                            />
-                                        )}
-                                    </div>
-                                </TabsContent>
-                            </Tabs>
-                        </section>
-
-                        <section className="mb-8">
-                            <h2 className="text-xl font-semibold mb-4">
-                                Analysis Results
-                            </h2>
-                            <div className="bg-card text-card-foreground rounded-lg p-4">
-                                {playlistData === null ? (
-                                    <h2 className="text-center text-xl font-semibold m-4">
-                                        :)
-                                    </h2>
-                                ) : (
-                                    <p>{describePlaylist(playlistData)}</p>
-                                )}
-                            </div>
-                        </section>
-
-                        <section className="mb-8">
-                            <h2 className="text-xl font-semibold mb-4">
-                                Share and Download
-                            </h2>
-                            <div className="flex space-x-4">
-                                <Button className="flex items-center">
-                                    <ShareIcon className="mr-2 h-4 w-4" />
-                                    Share Analysis
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="flex items-center"
-                                >
-                                    <DownloadIcon className="mr-2 h-4 w-4" />
-                                    Download Results
-                                </Button>
-                                <Button
-                                    variant={isSaved ? "default" : "outline"}
-                                    className="flex items-center"
-                                    onClick={() => {
-                                        console.log("isLoggedIn:", isLoggedIn);
-                                        if (session) {
-                                            handleSavePlaylistData();
-                                        } else {
-                                            openAuthModal("login");
-                                        }
-                                    }}
-                                >
-                                    <HeartIcon
-                                        className={`mr-2 h-4 w-4 ${
-                                            isSaved ? "fill-current" : ""
-                                        }`}
-                                    />
-                                    {isSaved ? "Saved" : "Save Playlist"}
-                                </Button>
-                            </div>
-                        </section>
-
-                        {/* <section>
-                            <h2 className="text-xl font-semibold mb-4">
-                                Discover Similar Music
-                            </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {sampleTracks.map((track, index) => (
-                                    <div
-                                        key={index}
-                                        className="bg-card text-card-foreground rounded-lg p-4"
-                                    >
-                                        <h3 className="font-semibold">
-                                            {track.title}
-                                        </h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            {track.artist}
-                                        </p>
-                                        <p className="text-sm mt-2">
-                                            Mood: {track.mood}
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
-                        </section> */}
-                    </>
-                    // )
-                }
+                <section className="mb-12">
+                    <h3 className="text-2xl font-semibold mb-4 text-center">
+                        How It Works
+                    </h3>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        <div className="bg-card text-card-foreground rounded-lg p-6">
+                            <h4 className="font-semibold mb-2">
+                                1. Connect Your Music
+                            </h4>
+                            <p>
+                                Import your playlists from Spotify or enter a
+                                playlist URL.
+                            </p>
+                        </div>
+                        <div className="bg-card text-card-foreground rounded-lg p-6">
+                            <h4 className="font-semibold mb-2">2. Analyze</h4>
+                            <p>
+                                Our service analyzes the audio features of your
+                                music.
+                            </p>
+                        </div>
+                        <div className="bg-card text-card-foreground rounded-lg p-6">
+                            <h4 className="font-semibold mb-2">3. Discover</h4>
+                            <p>
+                                Get insights about your music taste and discover
+                                new songs that match your mood.
+                            </p>
+                        </div>
+                    </div>
+                </section>
             </main>
         </div>
     );
 }
+
+//  <main className="container mx-auto px-4 py-8">
+//         {
+//             <>
+//                 <section className="mb-8">
+//                     <h2 className="text-xl font-semibold mb-4">
+//                         Import or Select Music
+//                     </h2>
+//                     <div className="flex space-x-4 mb-4">
+//                         <div>
+//                             {status === "authenticated" ? (
+//                                 <Button
+//                                     className="flex items-center"
+//                                     type="button"
+//                                     onClick={() =>
+//                                         signOut({ callbackUrl: "/" })
+//                                     }
+//                                 >
+//                                     Imported from {session.user?.name}{" "}
+//                                     <br /> Sign out
+//                                 </Button>
+//                             ) : (
+//                                 <Button
+//                                     className="flex items-center"
+//                                     onClick={() => signIn("spotify")}
+//                                     disabled={status === "loading"}
+//                                 >
+//                                     Import from Spotify
+//                                 </Button>
+//                             )}
+//                         </div>
+//                         <Input
+//                             type="text"
+//                             value={playlistUrl}
+//                             onChange={(e) =>
+//                                 setPlaylistUrl(e.target.value)
+//                             }
+//                             placeholder="OR Enter the URL of a specific playlist"
+//                             className="flex-grow"
+//                         />
+//                     </div>
+//                     <div className="flex space-x-4">
+//                         <Button
+//                             className="flex items-center"
+//                             onClick={handleAnalyse}
+//                             disabled={isLoading} // Disable button if loading
+//                         >
+//                             {isLoading ? "Loading..." : "Analyse"}
+//                         </Button>
+//                     </div>
+//                     {error && (
+//                         <p className="text-red-500 mt-4">{error}</p>
+//                     )}{" "}
+//                     {/* Show error if exists */}
+//                     </section>
+//                     </>
+//                     // )
+//                 }
+//             </main>
