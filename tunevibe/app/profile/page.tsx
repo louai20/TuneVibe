@@ -154,9 +154,9 @@ export default function UserAccount() {
                                                 className="flex items-center justify-between p-4 bg-muted rounded-lg"
                                             >
                                                 <Link
-                                                    href={`/profile/${encodeURIComponent(
+                                                    href={`/analysis/${encodeURIComponent(
                                                         playlist.spotifyId
-                                                    )}/audio-features`}
+                                                    )}`}
                                                     className="flex items-center space-x-4"
                                                 >
                                                     {playlist.jsonData.images &&
