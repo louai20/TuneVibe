@@ -42,7 +42,7 @@ const NavBar = () => {
                     <nav className="flex items-center space-x-4">
                         <ul className="flex space-x-4">
                             <li>
-                                <Link href="/home" className="hover:underline">
+                                <Link href="/home" className="hover:underline" >
                                     Home
                                 </Link>
                             </li>
@@ -50,6 +50,7 @@ const NavBar = () => {
                                 <Link
                                     href="/aboutus"
                                     className="hover:underline"
+                                    
                                 >
                                     About
                                 </Link>
@@ -77,7 +78,7 @@ const NavBar = () => {
                             <>
                                 <Button
                                     variant="ghost"
-                                    className="px-4 py-2 text-base hover:underline"
+                                    className="px-4 py-2 text-base "
                                     onClick={() => openAuthModal("login")}
                                 >
                                     Login
