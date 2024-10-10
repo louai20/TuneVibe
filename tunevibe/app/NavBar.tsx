@@ -67,9 +67,6 @@ const NavBar = () => {
                                     <DropdownMenuItem>
                                         <Link href="/profile">Profile</Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        Settings
-                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={handleLogout}>
                                         Logout
