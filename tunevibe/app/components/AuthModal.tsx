@@ -62,7 +62,7 @@ const AuthModal: React.FC = () => {
             closeAuthModal();
             setError("");
             toast.success("Login Succeeded！");
-            router.push("/home");
+            location.reload();  
         }
     };
 
@@ -98,7 +98,7 @@ const AuthModal: React.FC = () => {
                     closeAuthModal();
                     setError("");
                     toast.success("Register and Login Succeeded！");
-                    router.push("/home");
+                    location.reload();  
                 }
             }
         } catch (err) {
