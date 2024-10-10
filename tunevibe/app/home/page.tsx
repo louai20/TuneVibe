@@ -16,6 +16,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import MoodChart from "@/mood-chart/page";
 import { usePlaylistHandler } from "@/lib/playlistHandler";
 import BubbleChart from "@/components/BubbleChart";
+import describePlaylist from "@/utils/describePlaylist";
 import useStore from "@/store/useStore";
 import { toast } from "react-hot-toast";
 // import { fetchPlaylist, PlaylistData } from "@/utils/fetchPlaylist";
@@ -275,17 +276,13 @@ export default function Home() {
                                 Analysis Results
                             </h2>
                             <div className="bg-card text-card-foreground rounded-lg p-4">
-                                <p className="mb-2">
-                                    Overall Mood: Energetic and Upbeat
-                                </p>
-                                <p className="mb-2">
-                                    Dominant Themes: Love, Celebration,
-                                    Friendship
-                                </p>
-                                <p>
-                                    Top Keywords: Dance, Party, Together, Night,
-                                    Fun
-                                </p>
+                                {playlistData === null ? (
+                                    <h2 className="text-center text-xl font-semibold m-4">
+                                        :)
+                                    </h2>
+                                ) : (
+                                    <p>{describePlaylist(playlistData)}</p>
+                                )}
                             </div>
                         </section>
 
@@ -309,7 +306,7 @@ export default function Home() {
                                     variant={isSaved ? "default" : "outline"}
                                     className="flex items-center"
                                     onClick={() => {
-                                        console.log("isLoggedIn:", isLoggedIn); 
+                                        console.log("isLoggedIn:", isLoggedIn);
                                         if (session) {
                                             handleSavePlaylistData();
                                         } else {
@@ -327,7 +324,7 @@ export default function Home() {
                             </div>
                         </section>
 
-                        <section>
+                        {/* <section>
                             <h2 className="text-xl font-semibold mb-4">
                                 Discover Similar Music
                             </h2>
@@ -349,7 +346,7 @@ export default function Home() {
                                     </div>
                                 ))}
                             </div>
-                        </section>
+                        </section> */}
                     </>
                     // )
                 }
