@@ -27,8 +27,9 @@ const NavBar = () => {
     const { openAuthModal, closeAuthModal, error, setError } = useStore();
 
     const handleLogout = async () => {
-        await signOut({ callbackUrl: "/home" });
+        await signOut();
         toast.success("Logout Succeeded！");
+        location.reload();
     };
 
     return (
@@ -83,13 +84,6 @@ const NavBar = () => {
                                     onClick={() => openAuthModal("login")}
                                 >
                                     Login
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    className="px-4 py-2 text-base hover:underline"
-                                    onClick={() => openAuthModal("register")}
-                                >
-                                    Sign Up
                                 </Button>
                             </>
                         )}
