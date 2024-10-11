@@ -62,9 +62,6 @@ export default function RecommendationList({ data }: any) {
             <div className="flex-grow text-center">
                 <h1 className="text-xl font-bold">Recommendations</h1>
             </div>
-            <Button onClick={getRecommendations}> 
-                { isLoading ? (<MagicWandIcon className="h-4 w-4" />) : (<ReloadIcon className="h-4 w-4" />) }
-            </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
@@ -90,29 +87,11 @@ export default function RecommendationList({ data }: any) {
                             </Box>
                         </Flex>
                         </Table.Cell>
-                        <Table.Cell>
-                        <Flex gap="1" align="center">
-                            <a href={item.external_urls.spotify} target="_blank" rel="noopener noreferrer">
-                                <Badge color="green" radius="large">Spotify</Badge>
-                            </a>
-                        </Flex>
-                        </Table.Cell>
                     </Table.Row>
                     ))}
                 </Table.Body>
             </Table.Root>
 
-            <div className="flex flex-wrap justify-center overflow-hidden">
-                {recommendations.tracks.slice(0, 10).map((item: any, index: any) => (
-                    <div key={index} className={`m-2 ${index >= 4 ? 'hidden sm:block' : ''}`} >
-                        <a href={item.external_urls.spotify} target="_blank" rel="noopener noreferrer">
-                            <div className="w-32 h-32 rounded-full overflow-hidden transition-opacity duration-300 hover:opacity-75">
-                                <img src={item.album.images[0].url} alt={item.name} className="w-full h-full object-cover" />
-                            </div>
-                        </a>
-                    </div>
-                ))}
-            </div>
         </div>
     </div>
     );
