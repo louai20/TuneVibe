@@ -80,12 +80,12 @@ export const authOptions: NextAuthOptions = {
             }
             return session;
         },
-        async redirect({ url, baseUrl }) {
-            if (url.startsWith(baseUrl)) {
-                return `${baseUrl}/playlist`;
-            }
-            return baseUrl;
-        },
+        // async redirect({ url, baseUrl }) {
+        //     if (url.startsWith(baseUrl)) {
+        //         return `${baseUrl}/playlist`;
+        //     }
+        //     return baseUrl;
+        // },
     },
     secret: process.env.NEXTAUTH_SECRET,
 };
