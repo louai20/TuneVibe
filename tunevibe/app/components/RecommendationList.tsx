@@ -105,7 +105,7 @@ export default function RecommendationList({ data }: any) {
             <div className="flex flex-wrap justify-center overflow-hidden">
                 {recommendations.tracks.slice(0, 10).map((item: any, index: any) => (
                     <div key={index} className={`m-2 ${index >= 4 ? 'hidden sm:block' : ''}`} >
-                        <div className="w-32 h-32 rounded-full overflow-hidden">
+                        <div className="w-32 h-32 rounded-full overflow-hidden transition-opacity duration-300 hover:opacity-75">
                             <img src={item.album.images[0].url} alt={item.name} className="w-full h-full object-cover" />
                         </div>
                     </div>
