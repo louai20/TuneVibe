@@ -185,14 +185,14 @@ const AuthModal: React.FC = () => {
                             ? "Don't have an account? Sign Up"
                             : "Already have an account? Login"}
                     </Button>
-                    {mode === "login" && (
+                    {/* {mode === "login" && (
                         <Button
                             variant="outline"
                             onClick={() => signIn("spotify")}
                         >
                             Login with Spotify
                         </Button>
-                    )}
+                    )} */}
                 </div>
             </DialogContent>
         </Dialog>
