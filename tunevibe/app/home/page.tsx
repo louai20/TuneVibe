@@ -117,7 +117,7 @@ export default function Home() {
                             </div>
                         </div>
                         <div>
-                        {session && <ImportedPlaylists />}
+                        {session?.accessToken && <ImportedPlaylists />}
                         </div>
                         <Button
                             className="w-full"
