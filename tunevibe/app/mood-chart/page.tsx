@@ -58,7 +58,7 @@ export default function MoodChart({ data }: any) {
   return (
     <div>
       <h2 className="text-center text-xl font-semibold m-4">
-        {data.description}
+        {data.name}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
         <Table.Root size="1" className="h-72">
