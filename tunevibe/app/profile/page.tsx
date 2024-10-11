@@ -18,7 +18,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MusicIcon, BarChart2Icon, UserIcon, Trash2Icon } from "lucide-react";
 import toast from "react-hot-toast";
-import { useSession } from "next-auth/react";
+
+// This would typically come from an API or database
+const userData = {
+    name: "Alice Johnson",
+    email: "alice@example.com",
+    avatarUrl: "https://i.pravatar.cc/150?img=5",
+};
 
 interface SavedPlaylist {
     id: string;
@@ -29,7 +35,34 @@ interface SavedPlaylist {
     updatedAt: Date;
 }
 
+const analysisResults = [
+    {
+        id: 1,
+        name: "Summer Vibes 2023",
+        date: "2023-06-15",
+        mood: "Upbeat",
+        topThemes: ["Joy", "Energy", "Romance"],
+    },
+    {
+        id: 2,
+        name: "Workout Mix",
+        date: "2023-05-20",
+        mood: "Energetic",
+        topThemes: ["Motivation", "Power", "Rhythm"],
+    },
+    {
+        id: 3,
+        name: "Chill Evening",
+        date: "2023-06-01",
+        mood: "Relaxed",
+        topThemes: ["Calm", "Introspection", "Melody"],
+    },
+];
+
 export default function UserAccount() {
+    const [name, setName] = useState(userData.name);
+    const [email, setEmail] = useState(userData.email);
+    // const [profile, setProfile] = useState<ProfileData | null>(null);
     const [savedPlaylists, setSavedPlaylists] = useState<SavedPlaylist[]>([]);
 
     const handleDeletePlaylist = async (spotifyId: string) => {
@@ -89,103 +122,152 @@ export default function UserAccount() {
         fetchPlaylists();
     }, []);
 
-    const { data: session, status } = useSession();
-
-    if (status === "loading") {
-        return <p>Loading...</p>;
-    }
-
-    if (!session) {
-        return <p>Access Denied. You need to be logged in.</p>;
-    }
-
     return (
         <div>
             <NavBar />
             <div className="container mx-auto px-4 py-8">
-                <div className="grid gap-8 md:grid-cols-[auto_300px]">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>My Playlists</CardTitle>
-                            <CardDescription>
-                                View and manage your saved playlists
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {savedPlaylists.map((playlist) => (
-                                    <div
-                                        key={playlist.id}
-                                        className="flex items-center justify-between p-4 bg-muted rounded-lg"
-                                    >
-                                        <Link
-                                            href={`/analysis/${encodeURIComponent(
-                                                playlist.spotifyId
-                                            )}`}
-                                            className="flex items-center space-x-4"
-                                        >
-                                            {playlist.jsonData.images &&
-                                            playlist.jsonData.images.length >
-                                                0 ? (
-                                                <img
-                                                    src={
-                                                        playlist.jsonData.images
-                                                            .length > 2
-                                                            ? playlist.jsonData
-                                                                  .images[2].url
-                                                            : playlist.jsonData
-                                                                  .images[
-                                                                  playlist
-                                                                      .jsonData
-                                                                      .images
-                                                                      .length -
-                                                                      1
-                                                              ].url
-                                                    }
-                                                    alt="Playlist Image"
-                                                    className="w-8 h-8"
-                                                />
-                                            ) : (
-                                                <MusicIcon className="w-8 h-8 text-primary" />
-                                            )}
+                <h1 className="text-3xl font-bold mb-8">My Account</h1>
 
-                                            <div>
-                                                <h3 className="font-semibold">
-                                                    {playlist.name}
-                                                </h3>
-                                            </div>
-                                        </Link>
-                                        <div className="flex items-center space-x-2">
-                                            <Button
-                                                variant="destructive"
-                                                size="icon"
-                                                onClick={() =>
-                                                    handleDeletePlaylist(
-                                                        playlist.spotifyId
-                                                    )
-                                                }
-                                                aria-label="Delete Playlist"
+                <div className="grid gap-8 md:grid-cols-[300px_1fr]">
+                    <Tabs defaultValue="playlists">
+                        <TabsList className="mb-4">
+                            <TabsTrigger value="playlists">
+                                My Playlists
+                            </TabsTrigger>
+                            <TabsTrigger value="analysis">
+                                Analysis History
+                            </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="playlists">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>My Playlists</CardTitle>
+                                    <CardDescription>
+                                        View and manage your saved playlists
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        {savedPlaylists.map((playlist) => (
+                                            <div
+                                                key={playlist.id}
+                                                className="flex items-center justify-between p-4 bg-muted rounded-lg"
                                             >
-                                                <Trash2Icon className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                                <Link
+                                                    href={`/analysis/${encodeURIComponent(
+                                                        playlist.spotifyId
+                                                    )}`}
+                                                    className="flex items-center space-x-4"
+                                                >
+                                                    {playlist.jsonData.images &&
+                                                    playlist.jsonData.images
+                                                        .length > 0 ? (
+                                                        <img
+                                                            src={
+                                                                playlist
+                                                                    .jsonData
+                                                                    .images
+                                                                    .length > 2
+                                                                    ? playlist
+                                                                          .jsonData
+                                                                          .images[2]
+                                                                          .url
+                                                                    : playlist
+                                                                          .jsonData
+                                                                          .images[
+                                                                          playlist
+                                                                              .jsonData
+                                                                              .images
+                                                                              .length -
+                                                                              1
+                                                                      ].url
+                                                            }
+                                                            alt="Playlist Image"
+                                                            className="w-8 h-8"
+                                                        />
+                                                    ) : (
+                                                        <MusicIcon className="w-8 h-8 text-primary" />
+                                                    )}
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>My Account</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex flex-col items-start space-y-4">
-                                <p>Name: {session.user?.name}</p>
-                                <p>Email: {session.user?.email}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                                    <div>
+                                                        <h3 className="font-semibold">
+                                                            {playlist.name}
+                                                        </h3>
+                                                    </div>
+                                                </Link>
+                                                <div className="flex items-center space-x-2">
+                                                    <Button
+                                                        variant="destructive"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            handleDeletePlaylist(
+                                                                playlist.spotifyId
+                                                            )
+                                                        }
+                                                        aria-label="Delete Playlist"
+                                                    >
+                                                        <Trash2Icon className="w-4 h-4" />
+                                                    </Button>
+                                                </div>
+                                                {/* <div className="text-sm text-muted-foreground">
+                                                    Last analyzed:
+                                                    {playlist.updatedAt.toISOString()}
+                                                </div> */}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                        <TabsContent value="analysis">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Analysis History</CardTitle>
+                                    <CardDescription>
+                                        Review your past mood analysis results
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        {analysisResults.map((result) => (
+                                            <div
+                                                key={result.id}
+                                                className="p-4 bg-muted rounded-lg"
+                                            >
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h3 className="font-semibold">
+                                                        {result.name}
+                                                    </h3>
+                                                    <span className="text-sm text-muted-foreground">
+                                                        {result.date}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center space-x-2 mb-2">
+                                                    <BarChart2Icon className="w-4 h-4 text-primary" />
+                                                    <span className="text-sm font-medium">
+                                                        Overall Mood:{" "}
+                                                        {result.mood}
+                                                    </span>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {result.topThemes.map(
+                                                        (theme, index) => (
+                                                            <span
+                                                                key={index}
+                                                                className="px-2 py-1 bg-primary text-primary-foreground text-xs rounded-full"
+                                                            >
+                                                                {theme}
+                                                            </span>
+                                                        )
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </div>
         </div>
