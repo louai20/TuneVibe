@@ -9,6 +9,7 @@ import { usePlaylistHandler } from "@/lib/playlistHandler";
 import useStore from "@/store/useStore";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import ImportedPlaylists from "@/components/ImportedPlaylists";
 
 export default function Home() {
     const { user, theme, setUser, toggleTheme } = useStore();
@@ -19,6 +20,17 @@ export default function Home() {
         usePlaylistHandler(); // Destructure values from the custom hook
     // nextauth
     const { data: session, status } = useSession();
+
+    
+
+    const handleImportClick = () => {
+        signIn("spotify");
+        
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPlaylistUrl(e.target.value);
+    };
 
     // const router = useRouter(); // Initialize useRouter
 
@@ -73,13 +85,15 @@ export default function Home() {
                                 ) : (
                                     <Button
                                         className="flex items-center"
-                                        onClick={() => signIn("spotify")}
+                                        // onClick={() => signIn("spotify")}
+                                        onClick={handleImportClick}
                                         disabled={status === "loading"}
                                     >
                                         Import from Spotify
                                     </Button>
                                 )}
                             </div>
+
                             <div className="flex-grow relative">
                                 <Input
                                     type="text"
@@ -89,14 +103,26 @@ export default function Home() {
                                     }
                                     placeholder="OR Enter the URL of a specific playlist"
                                     className="flex-grow"
+                                    onDragOver={(e) => e.preventDefault()}
+                                    onDrop={(e) => {
+                                        e.preventDefault();
+                                        const url =
+                                            e.dataTransfer.getData(
+                                                "playlistUrl"
+                                            );
+                                        if (url) {
+                                            setPlaylistUrl(url);
+                                        }
+                                    }}
                                 />
                             </div>
                         </div>
+                        <div>
+                        {session && <ImportedPlaylists />}
+                        </div>
                         <Button
                             className="w-full"
-                            onClick={() =>
-                                handleFetchPlaylist(playlistUrl)
-                            } // Use the handler from the custom hook
+                            onClick={() => handleFetchPlaylist(playlistUrl)} // Use the handler from the custom hook
                             disabled={isLoading} // Disable button if loading
                         >
                             {isLoading ? "Loading..." : "Analyse Playlist"}
@@ -138,62 +164,3 @@ export default function Home() {
         </div>
     );
 }
-
-//  <main className="container mx-auto px-4 py-8">
-//         {
-//             <>
-//                 <section className="mb-8">
-//                     <h2 className="text-xl font-semibold mb-4">
-//                         Import or Select Music
-//                     </h2>
-//                     <div className="flex space-x-4 mb-4">
-//                         <div>
-//                             {status === "authenticated" ? (
-//                                 <Button
-//                                     className="flex items-center"
-//                                     type="button"
-//                                     onClick={() =>
-//                                         signOut({ callbackUrl: "/" })
-//                                     }
-//                                 >
-//                                     Imported from {session.user?.name}{" "}
-//                                     <br /> Sign out
-//                                 </Button>
-//                             ) : (
-//                                 <Button
-//                                     className="flex items-center"
-//                                     onClick={() => signIn("spotify")}
-//                                     disabled={status === "loading"}
-//                                 >
-//                                     Import from Spotify
-//                                 </Button>
-//                             )}
-//                         </div>
-//                         <Input
-//                             type="text"
-//                             value={playlistUrl}
-//                             onChange={(e) =>
-//                                 setPlaylistUrl(e.target.value)
-//                             }
-//                             placeholder="OR Enter the URL of a specific playlist"
-//                             className="flex-grow"
-//                         />
-//                     </div>
-//                     <div className="flex space-x-4">
-//                         <Button
-//                             className="flex items-center"
-//                             onClick={handleAnalyse}
-//                             disabled={isLoading} // Disable button if loading
-//                         >
-//                             {isLoading ? "Loading..." : "Analyse"}
-//                         </Button>
-//                     </div>
-//                     {error && (
-//                         <p className="text-red-500 mt-4">{error}</p>
-//                     )}{" "}
-//                     {/* Show error if exists */}
-//                     </section>
-//                     </>
-//                     // )
-//                 }
-//             </main>
