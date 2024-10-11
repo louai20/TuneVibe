@@ -62,6 +62,9 @@ export default function RecommendationList({ data }: any) {
             <div className="flex-grow text-center">
                 <h1 className="text-xl font-bold">Recommendations</h1>
             </div>
+            <Button onClick={getRecommendations}> 
+                { isLoading ? (<MagicWandIcon className="h-4 w-4" />) : (<ReloadIcon className="h-4 w-4" />) }
+            </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
