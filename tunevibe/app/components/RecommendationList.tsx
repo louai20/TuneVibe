@@ -90,6 +90,13 @@ export default function RecommendationList({ data }: any) {
                             </Box>
                         </Flex>
                         </Table.Cell>
+                        <Table.Cell>
+                        <Flex gap="1" align="center">
+                            <a href={item.external_urls.spotify} target="_blank" rel="noopener noreferrer">
+                                <Badge color="green" radius="large">Spotify</Badge>
+                            </a>
+                        </Flex>
+                        </Table.Cell>
                     </Table.Row>
                     ))}
                 </Table.Body>
