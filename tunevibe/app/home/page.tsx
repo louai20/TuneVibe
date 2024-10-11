@@ -39,7 +39,7 @@ export default function Home() {
     //     return match ? match[1] : null;
     // };
 
-    // const handleAnalyse = async () => {
+    // const handleAnalyze = async () => {
     //     const playlistId = extractPlaylistId(playlistUrl);
     //     if (playlistId) {
     //         try {
@@ -124,7 +124,7 @@ export default function Home() {
                             onClick={() => handleFetchPlaylist(playlistUrl)} // Use the handler from the custom hook
                             disabled={isLoading} // Disable button if loading
                         >
-                            {isLoading ? "Loading..." : "Analyse Playlist"}
+                            {isLoading ? "Loading..." : "Analyze Playlist"}
                         </Button>
                     </div>
                 </section>
