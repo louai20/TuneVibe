@@ -16,7 +16,7 @@ import { useSession } from "next-auth/react";
 import { pageDebug } from "@/utils/debugger";
 
 export default function AnalysisPage() {
-    const { spotifyId } = useParams(); 
+    const { spotifyId } = useParams();
     const { user, theme, setUser, toggleTheme } = useStore();
     const isLoggedIn = !!user;
 
@@ -33,11 +33,10 @@ export default function AnalysisPage() {
 
     useEffect(() => {
         if (spotifyId) {
-          const playlistUrl = `https://open.spotify.com/playlist/${spotifyId}`;
-          handleFetchPlaylist(playlistUrl);
+            const playlistUrl = `https://open.spotify.com/playlist/${spotifyId}`;
+            handleFetchPlaylist(playlistUrl);
         }
-      }, [spotifyId]);
-    
+    }, [spotifyId]);
 
     // Fetch playlists on component mount
     useEffect(() => {
@@ -141,7 +140,7 @@ export default function AnalysisPage() {
                     <>
                         <section className="mb-8">
                             <h2 className="text-xl font-semibold mb-4">
-                                Mood and Lyrics Analysis
+                                Audio Features Visualization
                             </h2>
                             <Tabs defaultValue="moodchart">
                                 <TabsList>
@@ -185,7 +184,7 @@ export default function AnalysisPage() {
 
                         <section className="mb-8">
                             <h2 className="text-xl font-semibold mb-4">
-                                Analysis Results
+                                Audio Features Description
                             </h2>
                             <div className="bg-card text-card-foreground rounded-lg p-4">
                                 {playlistData === null ? (
