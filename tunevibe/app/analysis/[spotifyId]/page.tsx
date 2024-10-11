@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useParams } from "next/navigation";
 import { usePlaylistHandler } from "@/lib/playlistHandler";
-import MoodChart from "@/mood-chart/page";
 import BubbleChart from "@/components/BubbleChart";
 import describePlaylist from "@/utils/describePlaylist";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,8 @@ import useStore from "@/store/useStore";
 import NavBar from "@/NavBar";
 import { useSession } from "next-auth/react";
 import { pageDebug } from "@/utils/debugger";
+import MoodChart from "@/components/MoodChart";
+import RecommendationList from "@/components/RecommendationList";
 
 export default function AnalysisPage() {
     const { spotifyId } = useParams();
@@ -153,16 +154,22 @@ export default function AnalysisPage() {
                                 </TabsList>
                                 <TabsContent value="moodchart">
                                     {
-                                        <div className="h-full bg-muted rounded-lg items-center p-5">
-                                            {playlistData === null ? (
-                                                <h2 className="text-center text-xl font-semibold m-4">
-                                                    :)
-                                                </h2>
-                                            ) : (
-                                                <MoodChart
-                                                    data={playlistData}
-                                                />
-                                            )}
+                                        <div>
+                                            <div className="h-full bg-muted rounded-lg items-center p-5">
+                                                {playlistData === null ? (
+                                                    <h2 className="text-center text-xl font-semibold m-4">
+                                                        :)
+                                                    </h2>
+                                                ) : (
+                                                    <MoodChart
+                                                        data={playlistData}
+                                                    />
+                                                )}
+                                            </div>
+
+                                            <div className="h-full bg-muted rounded-lg items-center p-5 mt-4">
+                                                <RecommendationList data={playlistData} />
+                                            </div>
                                         </div>
                                     }
                                 </TabsContent>
