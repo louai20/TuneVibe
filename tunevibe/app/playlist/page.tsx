@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
-import { useSession } from "next-auth/react"; // Import useSession
+import { useSession } from "next-auth/react"; // Import useSession.
 import { Flex, Avatar, Box } from "@radix-ui/themes";
 
 type Artist = {
