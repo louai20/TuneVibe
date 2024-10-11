@@ -86,23 +86,23 @@ export async function GET(
     } catch (error: any) {
         if (error.response && error.response.status === 429) {
             console.error("Too Many Requests:", error.message);
-            const retryAfter = error.response.headers["retry-after"];
-            if (retryAfter) {
-                setTimeout(() => {
-                    // 
-                }, parseInt(retryAfter) * 1000); 
-            }
+            return NextResponse.json(
+                {
+                    error: "Too many requests. Please try again later.",
+                },
+                { status: 429 }
+            );
         } else {
             console.error("Error fetching data:", error);
+            return NextResponse.json(
+                {
+                    error:
+                        error.response?.data?.error?.message ||
+                        "Failed to fetch playlist",
+                },
+                { status: error.response?.status || 500 }
+            );
         }
-        return NextResponse.json(
-            {
-                error:
-                    error.response?.data?.error?.message ||
-                    "Failed to fetch playlist",
-            },
-            { status: error.response?.status || 500 }
-        );
     }
 }
 //////////////////////////////////////////
