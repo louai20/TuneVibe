@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 // import { SessionProvider } from "next-auth/react";
 // import SessionProviderWrapper from "@/components/SessionProviderWrapper";
-// import { useSession } from "next-auth/react"; .
+// import { useSession } from "next-auth/react";
 
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
