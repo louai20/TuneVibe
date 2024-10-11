@@ -13,6 +13,7 @@ import { toast } from "react-hot-toast";
 import useStore from "@/store/useStore";
 import NavBar from "@/NavBar";
 import { useSession } from "next-auth/react";
+import { pageDebug } from "@/utils/debugger";
 
 export default function AnalysisPage() {
     const { spotifyId } = useParams(); 
@@ -217,6 +218,7 @@ export default function AnalysisPage() {
                                     variant={isSaved ? "default" : "outline"}
                                     className="flex items-center"
                                     onClick={() => {
+                                        // pageDebug(`isLoggedIn: ${isLoggedIn}`);
                                         console.log("isLoggedIn:", isLoggedIn);
                                         if (session) {
                                             handleSavePlaylistData();
