@@ -42,7 +42,6 @@ export default function RecommendationList({ data }: any) {
 
         const response = await axios.get(`/api/getRecommendations/${params}`);
         const responseData = response.data;
-        console.log(responseData)
         setRecommendations(responseData);
         setIsLoading(false)
     }
@@ -60,7 +59,7 @@ export default function RecommendationList({ data }: any) {
 
         <div className="flex items-center justify-between mb-4">
             <div className="flex-grow text-center">
-                <h1 className="text-xl font-bold">Recommendations</h1>
+                <h1 className="text-xl font-bold">Recommendations based on Audio Features</h1>
             </div>
             <Button onClick={getRecommendations}> 
                 { isLoading ? (<MagicWandIcon className="h-4 w-4" />) : (<ReloadIcon className="h-4 w-4" />) }

@@ -142,8 +142,8 @@ export default function Page() {
             <div className="flex flex-col items-center">
               {/* Avatar */}
               <img
-                src="https://github.com/"
-                alt="Malki Kothalawala Avatar"
+                src="https://github.com/malkinimesha.png"
+                alt="Malki Kothalawala"
                 className="h-32 w-32 rounded-full hover:scale-110 transition-transform mb-4"
               />
               {/* Developer Name */}
@@ -151,7 +151,7 @@ export default function Page() {
               {/* Social Media Icons */}
               <div className="flex space-x-4">
                 {/* GitHub Logo */}
-                <a href="https://github.com/malki-profile" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/malkinimesha" target="_blank" rel="noopener noreferrer">
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
                     alt="GitHub Logo"
