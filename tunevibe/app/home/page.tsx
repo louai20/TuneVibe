@@ -79,8 +79,7 @@ export default function Home() {
                                             signOut({ callbackUrl: "/" })
                                         }
                                     >
-                                        Imported from {session.user?.name}{" "}
-                                        <br /> Sign out
+                                        Imported from {session.user?.name}
                                     </Button>
                                 ) : (
                                     <Button
