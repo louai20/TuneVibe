@@ -84,10 +84,21 @@ export default function MoodChart({ data }: any) {
                   <Flex gap="1" align="center">
                     <Badge color="iris" radius="large">
                       Danceability{" "}
-                      {Math.round(item.audioFeatures.danceability * 100)}%
+                      {
+                        item.audioFeatures && item.audioFeatures.danceability
+                          ? Math.round(item.audioFeatures.danceability * 100)
+                          : 0 // Default to 0 or any other value you prefer
+                      }
+                      %
                     </Badge>
                     <Badge color="yellow" radius="large">
-                      Valence {Math.round(item.audioFeatures.valence * 100)}%
+                      Valence{" "}
+                      {
+                        item.audioFeatures && item.audioFeatures.valence
+                          ? Math.round(item.audioFeatures.valence * 100)
+                          : 0 // Default to 0 or any other value you prefer
+                      }
+                      %
                     </Badge>
                   </Flex>
                 </Table.Cell>
@@ -118,22 +129,24 @@ function getChartData(data: any): any {
     return; // Return early if data is not valid
   }
 
-  const valences = data.tracks.items.map(
-    (item: any) => item.audioFeatures.valence
-  );
-  const energies = data.tracks.items.map(
-    (item: any) => item.audioFeatures.energy
-  );
-  const danceabilities = data.tracks.items.map(
-    (item: any) => item.audioFeatures.danceability
-  );
-  const tempos = data.tracks.items.map((item: any) => item.audioFeatures.tempo);
-  const loudnesses = data.tracks.items.map(
-    (item: any) => item.audioFeatures.loudness
-  );
-  const acousticnesses = data.tracks.items.map(
-    (item: any) => item.audioFeatures.acousticness
-  );
+  const valences = data.tracks.items
+    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .map((item: any) => item.audioFeatures.valence);
+  const energies = data.tracks.items
+    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .map((item: any) => item.audioFeatures.energy);
+  const danceabilities = data.tracks.items
+    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .map((item: any) => item.audioFeatures.danceability);
+  const tempos = data.tracks.items
+    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .map((item: any) => item.audioFeatures.tempo);
+  const loudnesses = data.tracks.items
+    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .map((item: any) => item.audioFeatures.loudness);
+  const acousticnesses = data.tracks.items
+    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .map((item: any) => item.audioFeatures.acousticness);
 
   const normalizedTempos = normalize(tempos);
   const normalizedLoudnesses = normalize(loudnesses);

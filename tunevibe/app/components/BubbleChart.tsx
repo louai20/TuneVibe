@@ -69,15 +69,21 @@ const BubbleChart: React.FC<BubbleChartProps> = ({ data }) => {
           x:
             xFeature === "popularity"
               ? item.track.popularity
-              : item.audioFeatures[xFeature as AudioFeatureKey],
+              : item.audioFeatures
+              ? item.audioFeatures[xFeature as AudioFeatureKey]
+              : 0,
           y:
             yFeature === "popularity"
               ? item.track.popularity
-              : item.audioFeatures[yFeature as AudioFeatureKey],
+              : item.audioFeatures
+              ? item.audioFeatures[yFeature as AudioFeatureKey]
+              : 0,
           r:
             sizeFeature === "popularity"
               ? item.track.popularity / 5
-              : item.audioFeatures[sizeFeature as AudioFeatureKey] * 10,
+              : item.audioFeatures
+              ? item.audioFeatures[sizeFeature as AudioFeatureKey] * 10
+              : 0,
         })),
         backgroundColor: "rgba(75,192,192,0.4)",
       },
