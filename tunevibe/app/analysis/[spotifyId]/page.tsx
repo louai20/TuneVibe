@@ -15,235 +15,245 @@ import { useSession } from "next-auth/react";
 import { pageDebug } from "@/utils/debugger";
 import MoodChart from "@/components/MoodChart";
 import RecommendationList from "@/components/RecommendationList";
+import { handleDownloadAndShare } from "@/utils/downloadHelper";
 
 export default function AnalysisPage() {
-    const { spotifyId } = useParams();
-    const { user, theme, setUser, toggleTheme } = useStore();
-    const isLoggedIn = !!user;
+  const { spotifyId } = useParams();
+  const { user, theme, setUser, toggleTheme } = useStore();
+  const isLoggedIn = !!user;
+  const [activeTab, setActiveTab] = useState("moodchart");
 
-    const [playlistUrl, setPlaylistUrl] = useState("");
-    const { playlistData, isLoading, error, handleFetchPlaylist } =
-        usePlaylistHandler(); // Destructure values from the custom hook
-    // nextauth
-    const { data: session, status } = useSession();
+  const [playlistUrl, setPlaylistUrl] = useState("");
+  const { playlistData, isLoading, error, handleFetchPlaylist } =
+    usePlaylistHandler(); // Destructure values from the custom hook
+  // nextauth
+  const { data: session, status } = useSession();
 
-    const [loading, setLoading] = useState(true); // Initialize loading state
-    const [isSaved, setIsSaved] = useState(false);
+  const [loading, setLoading] = useState(true); // Initialize loading state
+  const [isSaved, setIsSaved] = useState(false);
 
-    const { openAuthModal, closeAuthModal } = useStore();
+  const { openAuthModal, closeAuthModal } = useStore();
 
-    useEffect(() => {
-        if (spotifyId) {
-            const playlistUrl = `https://open.spotify.com/playlist/${spotifyId}`;
-            handleFetchPlaylist(playlistUrl);
-        }
-    }, [spotifyId]);
+  useEffect(() => {
+    if (spotifyId) {
+      const playlistUrl = `https://open.spotify.com/playlist/${spotifyId}`;
+      handleFetchPlaylist(playlistUrl);
+    }
+  }, [spotifyId]);
 
-    // Fetch playlists on component mount
-    useEffect(() => {
-        // Update loading state based on session status
-        if (status !== "loading") {
-            setLoading(false);
-        }
-    }, [status]); // Re-run this effect when the session status changes
+  // Fetch playlists on component mount
+  useEffect(() => {
+    // Update loading state based on session status
+    if (status !== "loading") {
+      setLoading(false);
+    }
+  }, [status]); // Re-run this effect when the session status changes
 
-    // useEffect(() => {
-    //     const fetchPlaylists = async () => {
-    //         if (status === "authenticated") {
-    //             // Check if the user is authenticated
-    //             const response = await fetch("/api/getPlayList"); // Replace with your actual endpoint
-    //             const data = await response.json();
+  // useEffect(() => {
+  //     const fetchPlaylists = async () => {
+  //         if (status === "authenticated") {
+  //             // Check if the user is authenticated
+  //             const response = await fetch("/api/getPlayList"); // Replace with your actual endpoint
+  //             const data = await response.json();
 
-    //             if (response.ok) {
-    //                 handleFetchPlaylist(data.url); // Set the playlist URL from the fetched data
-    //             } else {
-    //                 console.error(data.error); // Handle error appropriately
-    //             }
-    //         } else {
-    //             console.log("User is not logged in."); // Log or handle the case when the user is not authenticated
-    //         }
-    //     };
+  //             if (response.ok) {
+  //                 handleFetchPlaylist(data.url); // Set the playlist URL from the fetched data
+  //             } else {
+  //                 console.error(data.error); // Handle error appropriately
+  //             }
+  //         } else {
+  //             console.log("User is not logged in."); // Log or handle the case when the user is not authenticated
+  //         }
+  //     };
 
-    //     if (!loading) {
-    //         fetchPlaylists(); // Only fetch playlists if loading is false
-    //     }
-    // }, [loading, status]); // Include loading and status in the dependency array
+  //     if (!loading) {
+  //         fetchPlaylists(); // Only fetch playlists if loading is false
+  //     }
+  // }, [loading, status]); // Include loading and status in the dependency array
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="loader"></div>
-            </div>
-        );
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="loader"></div>
+      </div>
+    );
+  }
+
+  const handleSavePlaylistData = async () => {
+    if (!playlistData || !playlistData.name || !playlistData.id) {
+      toast.error(
+        "Please make sure the playlist name and Spotify ID are filled in and the data is obtained."
+      );
+      return;
     }
 
-    const handleSavePlaylistData = async () => {
-        if (!playlistData || !playlistData.name || !playlistData.id) {
-            toast.error(
-                "Please make sure the playlist name and Spotify ID are filled in and the data is obtained."
-            );
-            return;
-        }
+    // // extract image url
+    // const image = playlistData.images[2].url
 
-        // // extract image url
-        // const image = playlistData.images[2].url
-
-        const payload = {
-            name: playlistData.name,
-            spotifyId: playlistData.id,
-            // image: image,
-            jsonData: playlistData,
-        };
-
-        try {
-            const response = await fetch("/api/userSavedPlaylists", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                toast.success(
-                    "The playlist data has been successfully saved to the database!"
-                );
-                setIsSaved(true);
-                // Reset the form or perform other operations
-                setPlaylistUrl("");
-                // If you need to reset playlistData, you can do it here
-                // setPlaylistData(null); // Adjust according to the implementation of usePlaylistHandler
-            } else {
-                const errorData = await response.json();
-                toast.error(
-                    `Save failed: ${errorData.message || "Unknown error"}`
-                );
-            }
-        } catch (error) {
-            console.error("Error saving playlist data:", error);
-            toast.error(
-                "An error occurred during the save process. Please try again later."
-            );
-        }
+    const payload = {
+      name: playlistData.name,
+      spotifyId: playlistData.id,
+      // image: image,
+      jsonData: playlistData,
     };
 
-    return (
-        <div className="min-h-screen bg-background text-foreground">
-            <NavBar />
+    try {
+      const response = await fetch("/api/userSavedPlaylists", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-            <main className="container mx-auto px-4 py-8">
-                {isLoading ? (
-                    <div className="flex justify-center items-center h-screen">
-                        <div className="loader"></div>
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(
+          "The playlist data has been successfully saved to the database!"
+        );
+        setIsSaved(true);
+        // Reset the form or perform other operations
+        setPlaylistUrl("");
+        // If you need to reset playlistData, you can do it here
+        // setPlaylistData(null); // Adjust according to the implementation of usePlaylistHandler
+      } else {
+        const errorData = await response.json();
+        toast.error(`Save failed: ${errorData.message || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("Error saving playlist data:", error);
+      toast.error(
+        "An error occurred during the save process. Please try again later."
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <NavBar />
+
+      <main className="container mx-auto px-4 py-8">
+        {isLoading ? (
+          <div className="flex justify-center items-center h-screen">
+            <div className="loader"></div>
+          </div>
+        ) : error ? (
+          <p className="text-red-500 mt-4">{error}</p>
+        ) : (
+          <>
+            <section className="mb-8">
+              <h2 className="text-xl font-semibold mb-4">
+                Audio Features Visualization
+              </h2>
+              <Tabs defaultValue="moodchart">
+                <TabsList>
+                  <TabsTrigger value="moodchart">Mood Chart</TabsTrigger>
+                  <TabsTrigger value="bubblechart">Bubble Chart</TabsTrigger>
+                </TabsList>
+                <TabsContent value="moodchart">
+                  {
+                    <div>
+                      <div className="h-full bg-muted rounded-lg items-center p-5">
+                        {playlistData === null ? (
+                          <h2 className="text-center text-xl font-semibold m-4">
+                            :)
+                          </h2>
+                        ) : (
+                          <MoodChart data={playlistData} />
+                        )}
+                      </div>
+
+                      <div className="h-full bg-muted rounded-lg items-center p-5 mt-4">
+                        <RecommendationList data={playlistData} />
+                      </div>
                     </div>
-                ) : error ? (
-                    <p className="text-red-500 mt-4">{error}</p>
-                ) : (
-                    <>
-                        <section className="mb-8">
-                            <h2 className="text-xl font-semibold mb-4">
-                                Audio Features Visualization
-                            </h2>
-                            <Tabs defaultValue="moodchart">
-                                <TabsList>
-                                    <TabsTrigger value="moodchart">
-                                        Mood Chart
-                                    </TabsTrigger>
-                                    <TabsTrigger value="bubblechart">
-                                        Bubble Chart
-                                    </TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="moodchart">
-                                    {
-                                        <div>
-                                            <div className="h-full bg-muted rounded-lg items-center p-5">
-                                                {playlistData === null ? (
-                                                    <h2 className="text-center text-xl font-semibold m-4">
-                                                        :)
-                                                    </h2>
-                                                ) : (
-                                                    <MoodChart
-                                                        data={playlistData}
-                                                    />
-                                                )}
-                                            </div>
+                  }
+                </TabsContent>
+                <TabsContent value="bubblechart">
+                  <div>
+                    <div className="h-full bg-muted rounded-lg items-center p-5">
+                      {playlistData === null ? (
+                        <h2 className="text-center text-xl font-semibold m-4">
+                          :)
+                        </h2>
+                      ) : (
+                        <BubbleChart data={playlistData.tracks.items} />
+                      )}
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </section>
 
-                                            <div className="h-full bg-muted rounded-lg items-center p-5 mt-4">
-                                                <RecommendationList data={playlistData} />
-                                            </div>
-                                        </div>
-                                    }
-                                </TabsContent>
-                                <TabsContent value="bubblechart">
-                                    <div className="h-full bg-muted rounded-lg items-center p-5">
-                                        {playlistData === null ? (
-                                            <h2 className="text-center text-xl font-semibold m-4">
-                                                :)
-                                            </h2>
-                                        ) : (
-                                            <BubbleChart
-                                                data={playlistData.tracks.items}
-                                            />
-                                        )}
-                                    </div>
-                                </TabsContent>
-                            </Tabs>
-                        </section>
+            <div>
+              <section className="mb-8" id="Description">
+                <h2 className="text-xl font-semibold mb-4">
+                  Audio Features Description
+                </h2>
+                <div className="bg-card text-card-foreground rounded-lg p-4">
+                  {playlistData === null ? (
+                    <h2 className="text-center text-xl font-semibold m-4">
+                      :)
+                    </h2>
+                  ) : (
+                    <p>{describePlaylist(playlistData)}</p>
+                  )}
+                </div>
+              </section>
+            </div>
 
-                        <section className="mb-8">
-                            <h2 className="text-xl font-semibold mb-4">
-                                Audio Features Description
-                            </h2>
-                            <div className="bg-card text-card-foreground rounded-lg p-4">
-                                {playlistData === null ? (
-                                    <h2 className="text-center text-xl font-semibold m-4">
-                                        :)
-                                    </h2>
-                                ) : (
-                                    <p>{describePlaylist(playlistData)}</p>
-                                )}
-                            </div>
-                        </section>
+            <section className="mb-8">
+              <h2 className="text-xl font-semibold mb-4">Share and Download</h2>
+              <div className="flex space-x-4">
+                <Button
+                  className="flex items-center"
+                  onClick={() =>
+                    handleDownloadAndShare(
+                      "downloadSection",
+                      "Description",
+                      "Mood Analysis of Your Playlist",
+                      "share"
+                    )
+                  }
+                >
+                  <ShareIcon className="mr-2 h-4 w-4" />
+                  Share Analysis
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex items-center"
+                  onClick={() =>
+                    handleDownloadAndShare(
+                      "downloadSection",
+                      "Description",
+                      "Mood Analysis of Your Playlist",
+                      "download"
+                    )
+                  }
+                >
+                  <DownloadIcon className="mr-2 h-4 w-4" />
+                  Download Results
+                </Button>
+                <Button
+                  variant={isSaved ? "default" : "outline"}
+                  className="flex items-center"
+                  onClick={() => {
+                    // pageDebug(`isLoggedIn: ${isLoggedIn}`);
+                    console.log("isLoggedIn:", isLoggedIn);
+                    if (session) {
+                      handleSavePlaylistData();
+                    } else {
+                      openAuthModal("login");
+                    }
+                  }}
+                >
+                  <HeartIcon
+                    className={`mr-2 h-4 w-4 ${isSaved ? "fill-current" : ""}`}
+                  />
+                  {isSaved ? "Saved" : "Save Playlist"}
+                </Button>
+              </div>
+            </section>
 
-                        <section className="mb-8">
-                            <h2 className="text-xl font-semibold mb-4">
-                                Share and Download
-                            </h2>
-                            <div className="flex space-x-4">
-                                <Button className="flex items-center">
-                                    <ShareIcon className="mr-2 h-4 w-4" />
-                                    Share Analysis
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="flex items-center"
-                                >
-                                    <DownloadIcon className="mr-2 h-4 w-4" />
-                                    Download Results
-                                </Button>
-                                <Button
-                                    variant={isSaved ? "default" : "outline"}
-                                    className="flex items-center"
-                                    onClick={() => {
-                                        // pageDebug(`isLoggedIn: ${isLoggedIn}`);
-                                        console.log("isLoggedIn:", isLoggedIn);
-                                        if (session) {
-                                            handleSavePlaylistData();
-                                        } else {
-                                            openAuthModal("login");
-                                        }
-                                    }}
-                                >
-                                    <HeartIcon
-                                        className={`mr-2 h-4 w-4 ${
-                                            isSaved ? "fill-current" : ""
-                                        }`}
-                                    />
-                                    {isSaved ? "Saved" : "Save Playlist"}
-                                </Button>
-                            </div>
-                        </section>
-
-                        {/* <section>
+            {/* <section>
                             <h2 className="text-xl font-semibold mb-4">
                                 Discover Similar Music
                             </h2>
@@ -266,9 +276,9 @@ export default function AnalysisPage() {
                                 ))}
                             </div>
                         </section> */}
-                    </>
-                )}
-            </main>
-        </div>
-    );
+          </>
+        )}
+      </main>
+    </div>
+  );
 }
