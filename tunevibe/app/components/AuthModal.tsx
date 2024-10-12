@@ -160,6 +160,12 @@ const AuthModal: React.FC = () => {
 
     if (!isOpen || !mode) return null;
 
+    const handleSpotifyLogin = () => {
+        closeAuthModal(); 
+        signIn("spotify", { callbackUrl: window.location.href }); 
+    };
+
+
     return (
         <Dialog open={isOpen} onOpenChange={closeAuthModal}>
             <DialogContent>
@@ -225,6 +231,19 @@ const AuthModal: React.FC = () => {
                     <Button variant="outline" type="button" onClick={switchMode} className="w-full">
                         {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login"}
                     </Button>
+
+                    {/* Spotify Login Button */}
+                    <div className="mb-4">
+                        <Button
+                            variant="outline"
+                            onClick={handleSpotifyLogin}
+                            className="w-full"
+                        >
+                            Login with Spotify
+                        </Button>
+                    </div>
+
+             
                 </form>
             </DialogContent>
         </Dialog>
