@@ -5,6 +5,7 @@ import { Flex, Table, Badge, Avatar, Box, Text } from "@radix-ui/themes";
 import { Doughnut, Radar, Bar } from "react-chartjs-2";
 import { Chart as ChartJS, Tooltip, ArcElement, Legend, RadialLinearScale, LineElement, BarElement, CategoryScale } from "chart.js";
 ChartJS.register(Tooltip, ArcElement, Legend, RadialLinearScale, LineElement, BarElement, CategoryScale);
+import _ from 'lodash';
 
 export default function MoodChart({ data }: any) {
 
@@ -137,8 +138,14 @@ function getChartData(data: any): any {
   };
 }
 
-function normalize (values:any) {
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  return values.map((value:any) => (value - min) / (max - min));
+function normalize(values: number[]) {
+  const min = _.min(values) as number;
+  const max = _.max(values) as number;
+  const normalizedValues = values.map((value: number) => (value - min) / (max - min));
+  return normalizedValues;
+}
+function getMinMax(values: number[]): [number, number] {
+  const min = _.min(values) as number;
+  const max = _.max(values) as number;
+  return [min, max];
 }

@@ -5,6 +5,7 @@ import { Flex, Table, Badge, Avatar, Box, Text } from "@radix-ui/themes";
 import { PlayIcon, PauseIcon, ReloadIcon, MagicWandIcon } from "@radix-ui/react-icons"
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import _ from 'lodash';
 
 export default function RecommendationList({ data }: any) {
 
@@ -155,8 +156,8 @@ function prepareData (data: any):any {
     return queryString;
 }
 
-function getMinMax (values:any) {
-    const min = Math.min(...values);
-    const max = Math.max(...values);
+function getMinMax(values: number[]): [number, number] {
+    const min = _.min(values) as number;
+    const max = _.max(values) as number;
     return [min, max];
 }
