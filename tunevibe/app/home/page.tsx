@@ -10,6 +10,7 @@ import useStore from "@/store/useStore";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import ImportedPlaylists from "@/components/ImportedPlaylists";
+import SkeletonLoader from "@/components/SkeletonLoader";
 
 export default function Home() {
     const { user, theme, setUser, toggleTheme } = useStore();

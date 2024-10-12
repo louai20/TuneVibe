@@ -167,12 +167,12 @@ function getChartData(data: any): any {
     acousticnesses.reduce((a: any, b: any) => a + b) / acousticnesses.length;
 
   const moodScore =
-    0.4 * averageValence +
-    0.25 * averageEnergy +
-    0.15 * averageDanceability +
-    0.1 * averageNormalizedTempo +
-    0.05 * averageNormalizedLoudness +
-    0.05 * averageAcousticness;
+      (0.40 * averageValence) +
+      (0.25 * averageEnergy) +
+      (0.15 * averageDanceability) +
+      (0.10 * averageNormalizedTempo) +
+      (0.05 * averageNormalizedLoudness) +
+      (0.05 * averageAcousticness);
 
   return {
     labels: [
@@ -213,6 +213,7 @@ function normalize(values: number[]) {
   );
   return normalizedValues;
 }
+
 function getMinMax(values: number[]): [number, number] {
   const min = _.min(values) as number;
   const max = _.max(values) as number;

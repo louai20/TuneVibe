@@ -32,6 +32,8 @@ type Playlist = {
     external_urls: { spotify: string };
 };
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export default function ImportedPlaylists() {
     const { data: session } = useSession();
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -58,6 +60,9 @@ export default function ImportedPlaylists() {
                             if (!playlist.tracks) {
                                 throw new Error("Tracks are undefined");
                             }
+
+                            // Delay before fetching tracks
+                            await delay(1000); // Adjust the delay as needed
 
                             const tracksResponse = await fetch(
                                 playlist.tracks.href,
@@ -104,13 +109,13 @@ export default function ImportedPlaylists() {
 
                     setPlaylists(playlistsWithTracks);
                 }
-            } catch (err) {
+            } catch (err: unknown) {
                 if (isMounted) {
-                    setError(
-                        err instanceof Error
-                            ? err.message
-                            : "An unknown error occurred"
-                    );
+                    if (err instanceof Error) {
+                        setError(err.message);
+                    } else {
+                        setError('An unknown error occurred');
+                    }
                 }
             } finally {
                 if (isMounted) {
