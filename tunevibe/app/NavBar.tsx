@@ -27,9 +27,9 @@ const NavBar = () => {
     const { openAuthModal, closeAuthModal, error, setError } = useStore();
 
     const handleLogout = async () => {
-        await signOut();
+        await signOut({ callbackUrl: "/home" });
         toast.success("Logout Succeeded！");
-        location.reload();
+        
     };
 
     return (
@@ -69,7 +69,7 @@ const NavBar = () => {
                                         <Link href="/profile">Profile</Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={handleLogout}>
+                                    <DropdownMenuItem onClick={handleLogout} style={{ cursor: "pointer" }}>
                                         Logout
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
