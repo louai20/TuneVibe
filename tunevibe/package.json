@@ -11,6 +11,7 @@
     "test": "jest --config jest.config.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
     "@nextui-org/react": "^2.4.8",
     "@prisma/client": "^5.20.0",
     "@radix-ui/react-avatar": "^1.1.1",
@@ -28,6 +29,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "debug": "^4.3.7",
+    "formik": "^2.4.6",
     "lodash": "^4.17.21",
     "lucide-react": "^0.441.0",
     "mongodb": "^6.9.0",
@@ -37,9 +39,12 @@
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.0",
     "react-hot-toast": "^2.4.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "vee-validate": "^4.13.2",
+    "yup": "^1.4.0",
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
