@@ -38,6 +38,7 @@ export default function ImportedPlaylists() {
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         let isMounted = true;
@@ -129,6 +130,10 @@ export default function ImportedPlaylists() {
         };
     }, [session]);
 
+    const filteredPlaylists = playlists.filter((playlist) =>
+        playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     if (isLoading) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -149,8 +154,15 @@ export default function ImportedPlaylists() {
 <p className="text-muted-foreground mb-6">
     Drag and drop a playlist onto the URL input above to analyze it
 </p>
+<input
+                type="text"
+                placeholder="Search playlists..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="mb-4 p-2 border rounded"
+            />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto">
-                {playlists.map((playlist) => (
+                {filteredPlaylists.map((playlist) => (
                     <PlaylistCard key={playlist.id} playlist={playlist} />
                 ))}
             </div>
