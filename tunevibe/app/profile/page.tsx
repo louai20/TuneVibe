@@ -32,7 +32,10 @@ interface SavedPlaylist {
 
 export default function UserAccount() {
     const [savedPlaylists, setSavedPlaylists] = useState<SavedPlaylist[]>([]);
-
+    const [searchTerm, setSearchTerm] = useState("");
+    const filteredPlaylists = savedPlaylists.filter((playlist) =>
+        playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     const handleDeletePlaylist = async (spotifyId: string) => {
         if (!confirm("Are you sure you want to delete this playlist?")) {
             return;
@@ -111,8 +114,15 @@ export default function UserAccount() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
+                            <input
+                                type="text"
+                                placeholder="Search playlists..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="mb-4 p-2 border rounded"
+                            />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {savedPlaylists.map((playlist) => (
+                                {filteredPlaylists.map((playlist) => (
                                     <div
                                         key={playlist.id}
                                         className="flex items-center justify-between p-4 bg-muted rounded-lg"
@@ -187,5 +197,6 @@ export default function UserAccount() {
                 </div>
             </div>
         </div>
+        
     );
 }
