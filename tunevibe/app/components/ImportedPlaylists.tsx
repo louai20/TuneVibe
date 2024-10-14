@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import PlaylistCard from "./PlaylistCard";
 import { Loader2 } from "lucide-react";
+import PlaylistCard from "@/components/PlaylistCard";
+
 
 type Artist = {
     name: string;
@@ -142,9 +143,12 @@ export default function ImportedPlaylists() {
 
     return (
         <div className="mb-12 px-4">
-            <h2 className="text-2xl font-bold mb-6 text-black">
-                Drop a playlist to URL Input
-            </h2>
+            <h2 className="text-2xl font-bold mb-2 text-foreground">
+    Your Spotify Playlists
+</h2>
+<p className="text-muted-foreground mb-6">
+    Drag and drop a playlist onto the URL input above to analyze it
+</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto">
                 {playlists.map((playlist) => (
                     <PlaylistCard key={playlist.id} playlist={playlist} />

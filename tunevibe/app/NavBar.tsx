@@ -33,7 +33,7 @@ const NavBar = () => {
     };
 
     return (
-        <div>
+        <div className="relative z-50">
             <header className="border-b">
                 <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                     <Link href="/home" className="text-2xl font-bold">

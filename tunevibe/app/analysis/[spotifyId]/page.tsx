@@ -16,7 +16,7 @@ import { pageDebug } from "@/utils/debugger";
 import MoodChart from "@/components/MoodChart";
 import RecommendationList from "@/components/RecommendationList";
 import { handleDownloadAndShare } from "@/utils/downloadHelper";
-
+import FloatingShapes from '@/components/FloatingShapes';
 export default function AnalysisPage() {
   const { spotifyId } = useParams();
   const { user, theme, setUser, toggleTheme } = useStore();
@@ -129,8 +129,8 @@ export default function AnalysisPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <NavBar />
-
-      <main className="container mx-auto px-4 py-8">
+      <FloatingShapes />
+      <main className="container mx-auto px-4 py-8 relative z-20">
         {isLoading ? (
           <div className="flex justify-center items-center h-screen">
             <div className="loader"></div>

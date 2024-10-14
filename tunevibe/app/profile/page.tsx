@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { MusicIcon, BarChart2Icon, UserIcon, Trash2Icon } from "lucide-react";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import FloatingShapes from "@/components/FloatingShapes";
 
 interface SavedPlaylist {
     id: string;
@@ -97,9 +98,10 @@ export default function UserAccount() {
         return <p>Access Denied. You need to be logged in.</p>;
     }
     return (
-        <div>
+        <div className="relative min-h-screen bg-background text-foreground overflow-x-hidden">
             <NavBar />
-            <div className="container mx-auto px-4 py-8">
+            <FloatingShapes />
+            <div className="container mx-auto px-4 py-8 relative z-20">
                 <div className="grid gap-8 md:grid-cols-[auto_300px]">
                     <Card>
                         <CardHeader>

@@ -1,3 +1,5 @@
+const { addDynamicIconSelectors } = require('@iconify/tailwind');
+
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -74,22 +76,35 @@ module.exports = {
             transform: "scale(1.05)",
           },
         },
-        "accordion-down": {
-          from: { height: 0 },
-          to: { height: "var(--radix-accordion-content-height)" },
+        circularRight: {
+          "0%": { transform: "translate(100px, 0)" },
+          "25%": { transform: "translate(0, 100px)" },
+          "50%": { transform: "translate(-100px, 0)" },
+          "75%": { transform: "translate(0, -100px)" },
+          "100%": { transform: "translate(100px, 0)" },
         },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
+        circularLeft: {
+          "0%": { transform: "translate(100px, 0)" },
+          "25%": { transform: "translate(0, -100px)" },
+          "50%": { transform: "translate(-100px, 0)" },
+          "75%": { transform: "translate(0, 100px)" },
+          "100%": { transform: "translate(100px, 0)" },
         },
+        // Add more keyframes for additional movement patterns if desired
       },
       animation: {
         "fade-slide-in": "fade-slide-in 0.5s ease-out",
+        "fade-slide-in-delay": "fade-slide-in 0.5s ease-out 0.2s",
         "hover-scale-up": "hover-scale-up 0.3s ease-in-out",
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        circularRight: "circularRight 10s linear infinite",
+        circularLeft: "circularLeft 10s linear infinite",
+
+        // Add more animations for additional circles
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    addDynamicIconSelectors(),
+  ],
 };

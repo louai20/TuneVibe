@@ -23,7 +23,7 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({ playlist }) => {
 
     return (
         <Card
-            className="bg-card hover:bg-accent transition-colors duration-200 cursor-pointer"
+            className="bg-card hover:bg-accent transition-colors duration-200 cursor-move relative"
             draggable
             onDragStart={handleDragStart}
         >
@@ -55,3 +55,4 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({ playlist }) => {
 };
 
 export default PlaylistCard;
+
