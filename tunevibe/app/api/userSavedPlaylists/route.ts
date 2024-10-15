@@ -246,7 +246,7 @@ export async function DELETE(request: Request) {
         },
       });
   
-      console.log("Playlist deleted successfully:", spotifyId);
+      // console.log("Playlist deleted successfully:", spotifyId);
   
       return NextResponse.json(
         { message: "Playlist deleted successfully." },

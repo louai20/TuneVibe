@@ -49,27 +49,7 @@ export default function AnalysisPage() {
     }
   }, [status]); // Re-run this effect when the session status changes
 
-  // useEffect(() => {
-  //     const fetchPlaylists = async () => {
-  //         if (status === "authenticated") {
-  //             // Check if the user is authenticated
-  //             const response = await fetch("/api/getPlayList"); // Replace with your actual endpoint
-  //             const data = await response.json();
 
-  //             if (response.ok) {
-  //                 handleFetchPlaylist(data.url); // Set the playlist URL from the fetched data
-  //             } else {
-  //                 console.error(data.error); // Handle error appropriately
-  //             }
-  //         } else {
-  //             console.log("User is not logged in."); // Log or handle the case when the user is not authenticated
-  //         }
-  //     };
-
-  //     if (!loading) {
-  //         fetchPlaylists(); // Only fetch playlists if loading is false
-  //     }
-  // }, [loading, status]); // Include loading and status in the dependency array
 
   if (loading) {
     return (
@@ -237,7 +217,7 @@ export default function AnalysisPage() {
                   className="flex items-center"
                   onClick={() => {
                     // pageDebug(`isLoggedIn: ${isLoggedIn}`);
-                    console.log("isLoggedIn:", isLoggedIn);
+                    // console.log("isLoggedIn:", isLoggedIn);
                     if (session) {
                       handleSavePlaylistData();
                     } else {

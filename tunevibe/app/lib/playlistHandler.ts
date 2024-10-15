@@ -28,7 +28,7 @@ export const usePlaylistHandler = () => {
                 const data = response.data;
                 setPlaylistData(data);
                 router.push(`/analysis/${playlistId}`);
-                console.log(data);
+                // console.log(data);
             } catch (err: any) {
                 console.error("Error fetching playlist data:", err);
                 setError("Error fetching playlist data.");
