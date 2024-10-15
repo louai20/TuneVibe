@@ -1,22 +1,22 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const qParams = params.id;
-    const cookieStore = cookies();
+export async function GET(request: Request) {
 
+  try {
+    const url = new URL(request.url);
+    const searchParams = url.searchParams;
+    const queryString = new URLSearchParams(searchParams).toString();
+  
+    const cookieStore = cookies();
+  
     let accessToken = cookieStore.get('spotify_access_token')?.value;
     const tokenExpiration = cookieStore.get('spotify_token_expiration')?.value;
-
+    
     // Check if token is missing or expired
     if (!accessToken || !tokenExpiration || Date.now() >= parseInt(tokenExpiration)) {
 
-        const { token, expires_in } = await getAccessToken();
-
+      const { token, expires_in } = await getAccessToken();
       accessToken = token;
       const expirationTime = Date.now() + expires_in * 1000;
 
@@ -34,12 +34,12 @@ export async function GET(
         httpOnly: true,
         maxAge: expires_in,
         secure: true,
-      });
+      });             
     }
 
     // Make the request to the Spotify API with the valid access token
     const recommendationsResponse = await fetch(
-      `https://api.spotify.com/v1/recommendations?${qParams}`,
+      `https://api.spotify.com/v1/recommendations?${queryString}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -52,8 +52,10 @@ export async function GET(
     }
 
     const recommendationsData = await recommendationsResponse.json();
-    return NextResponse.json(recommendationsData);
-  } catch (error: any) {
+  
+    return NextResponse.json(recommendationsData, { status: 200 });
+  }
+  catch (error: any) {
     console.error('Error fetching data:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to fetch data' },
@@ -86,5 +88,4 @@ async function getAccessToken() {
       token: data.access_token,
       expires_in: data.expires_in,
     };
-  }
-  
+}

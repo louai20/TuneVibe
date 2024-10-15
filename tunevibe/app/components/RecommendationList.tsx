@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Flex, Table, Badge, Avatar, Box, Text } from "@radix-ui/themes";
+import { Flex, Table, Avatar, Box, Text } from "@radix-ui/themes";
 import { PlayIcon, PauseIcon, ReloadIcon, MagicWandIcon, StarIcon, StarFilledIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
 import _ from "lodash";
 
 export default function RecommendationList({ data }: any) {
@@ -39,9 +38,9 @@ export default function RecommendationList({ data }: any) {
   const getRecommendations = async () => {
     setIsLoading(true);
     let params = prepareData(data);
-
-    const response = await axios.get(`/api/getRecommendations/${params}`);
-    const responseData = response.data;
+    const queryString = new URLSearchParams(params).toString();
+    const response = await fetch(`/api/recommendations?${queryString}`);
+    const responseData = await response.json();
     setRecommendations(responseData);
     setIsLoading(false);
   };
