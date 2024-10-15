@@ -16,7 +16,7 @@ Additionally, our recommendation system uses this mood analysis to suggest new t
 Our bubble chart offers an interactive way to explore the relationships between different audio features in your playlist. Each bubble represents a track, with its size and position determined by various audio characteristics. This visualization allows you to identify patterns and clusters in your music taste, helping you discover which audio features are most prominent in your favorite tracks. It’s a powerful tool for understanding the nuances of your music preferences and how different songs in your playlist relate to each other.
 
 ## Architecture: MVVM with Next.js App Router & Zustand
-<img width="1792" alt="Snipaste_2024-10-15_16-10-41" src="https://github.com/user-attachments/assets/5d9bfe7a-f4bb-4acd-8192-5391415f4034">
+![diagram](https://github.com/user-attachments/assets/f6409162-d0b3-4f63-94d5-989ebe0ea772)
 
 
 
