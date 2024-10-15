@@ -2,12 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Flex, Table, Badge, Avatar, Box, Text } from "@radix-ui/themes";
-import {
-  PlayIcon,
-  PauseIcon,
-  ReloadIcon,
-  MagicWandIcon,
-} from "@radix-ui/react-icons";
+import { PlayIcon, PauseIcon, ReloadIcon, MagicWandIcon, StarIcon, StarFilledIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import _ from "lodash";
@@ -117,6 +112,11 @@ export default function RecommendationList({ data }: any) {
                   </Flex>
                 </Table.Cell>
                 <Table.Cell>
+                    <Flex gap="1" align="center">
+                        {getPopularity(item.popularity)}
+                    </Flex>
+                </Table.Cell>
+                <Table.Cell>
                   <Flex gap="1" align="center">
                     <a
                       href={item.external_urls.spotify}
@@ -213,4 +213,22 @@ function getMinMax(values: number[]): [number, number] {
   const min = _.min(values) as number;
   const max = _.max(values) as number;
   return [min, max];
+}
+
+function getPopularity(popularity:number) {
+
+  const maxStars = 5;
+  const rating = (popularity / 100) * maxStars;
+  const fullStars = Math.floor(rating);
+  const halfStars = rating - fullStars >= 0.5 ? 1 : 0;
+  const emptyStars = maxStars - fullStars - halfStars;
+
+  return (
+    <div className="flex space-x-1">
+      {Array(fullStars).fill(0).map((_, index) => ( <StarFilledIcon key={index} className="w-3 h-3 text-yellow-500" />))}
+      {halfStars === 1 && <StarIcon className="w-3 h-3 text-yellow-500" />}
+      {Array(emptyStars).fill(0).map((_, index) => (<StarIcon key={index} className="w-3 h-3 text-gray-300" />))}
+    </div>
+  );
+
 }
