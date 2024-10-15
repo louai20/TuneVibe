@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useRef, useEffect } from "react";
 import { Flex, Table, Badge, Avatar, Box, Text } from "@radix-ui/themes";
 import { Doughnut, Radar, Bar } from "react-chartjs-2";
@@ -13,6 +11,9 @@ import {
   BarElement,
   CategoryScale,
 } from "chart.js";
+import _ from "lodash";
+
+// Registering Chart.js components
 ChartJS.register(
   Tooltip,
   ArcElement,
@@ -22,16 +23,13 @@ ChartJS.register(
   BarElement,
   CategoryScale
 );
-import _ from "lodash";
 
 export default function MoodChart({ data }: any) {
-  // Return early if data is not available
   if (!data || !data.tracks || !data.tracks.items) {
     return <div className="text-center">No data available</div>;
   }
 
   const chartData = getChartData(data);
-
   const options: any = {
     maintainAspectRatio: false,
     aspectRatio: 1,
@@ -43,14 +41,11 @@ export default function MoodChart({ data }: any) {
     },
   };
 
-  // Return early if chartData is not valid
   if (!chartData) {
     return <div className="text-center">Unable to generate chart</div>;
   }
 
   const [chartType, setChartType] = useState("bar");
-
-  useEffect(() => {});
 
   return (
     <div>
@@ -60,56 +55,56 @@ export default function MoodChart({ data }: any) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
         <Table.Root size="1" className="h-72">
           <Table.Body>
-            {data.tracks.items.map((item: any, index: any) => (
-              <Table.Row key={index}>
-                <Table.Cell>
-                  <Flex gap="3" align="center">
-                    <Avatar
-                      src={item.track.album.images[2]?.url}
-                      size="1"
-                      fallback="A"
-                      radius="large"
-                    />
-                    <Box>
-                      <Text as="div" size="1" weight="bold">
-                        {item.track.name}
-                      </Text>
-                      <Text as="div" size="1" color="gray">
-                        {item.track.artists[0]?.name}
-                      </Text>
-                    </Box>
-                  </Flex>
-                </Table.Cell>
-                <Table.Cell>
-                  <Flex gap="1" align="center">
-                    <Badge color="iris" radius="large">
-                      Danceability{" "}
-                      {
-                        item.audioFeatures && item.audioFeatures.danceability
-                          ? Math.round(item.audioFeatures.danceability * 100)
-                          : 0 // Default to 0 or any other value you prefer
-                      }
-                      %
-                    </Badge>
-                    <Badge color="yellow" radius="large">
-                      Valence{" "}
-                      {
-                        item.audioFeatures && item.audioFeatures.valence
-                          ? Math.round(item.audioFeatures.valence * 100)
-                          : 0 // Default to 0 or any other value you prefer
-                      }
-                      %
-                    </Badge>
-                  </Flex>
-                </Table.Cell>
-              </Table.Row>
-            ))}
+            {data.tracks.items.map((item: any, index: any) => {
+              // Get values for the badges
+              const danceability = item.audioFeatures?.danceability || 0;
+              const valence = item.audioFeatures?.valence || 0;
+              const energy = item.audioFeatures?.energy || 0;
+
+              // Determine adjectives based on the values
+              const danceabilityBadge = danceability > 0.7 ? "Goovy" : danceability > 0.4 ? "Medium" : "Stiff";
+              const valenceBadge = valence > 0.7 ? "Uplifting" : valence > 0.4 ? "Neutral" : "Sad";
+              const energyBadge = energy > 0.7 ? "Energetic" : energy > 0.4 ? "Moderate " : "Calm";
+
+              return (
+                <Table.Row key={index}>
+                  <Table.Cell>
+                    <Flex gap="3" align="center">
+                      <Avatar
+                        src={item.track.album.images[2]?.url}
+                        size="1"
+                        fallback="A"
+                        radius="large"
+                      />
+                      <Box>
+                        <Text as="div" size="1" weight="bold">
+                          {item.track.name}
+                        </Text>
+                        <Text as="div" size="1" color="gray">
+                          {item.track.artists[0]?.name}
+                        </Text>
+                      </Box>
+                    </Flex>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Flex gap="1" align="center">
+                      <Badge color="yellow" radius="large">
+                        {valenceBadge}
+                      </Badge>
+                      <Badge color="green" radius="large">
+                        {energyBadge}
+                      </Badge>
+                      <Badge color="iris" radius="large">
+                        {danceabilityBadge}
+                      </Badge>
+                    </Flex>
+                  </Table.Cell>
+                </Table.Row>
+              );
+            })}
           </Table.Body>
         </Table.Root>
-        <div
-          className="flex flex-col justify-center items-center"
-          id="downloadSection"
-        >
+        <div className="flex flex-col justify-center items-center" id="downloadSection">
           <div className="h-72">
             <Bar data={chartData} options={options} />
           </div>
@@ -120,32 +115,27 @@ export default function MoodChart({ data }: any) {
 }
 
 function getChartData(data: any): any {
-  if (
-    !data ||
-    !data.tracks ||
-    !data.tracks.items ||
-    data.tracks.items.length === 0
-  ) {
-    return; // Return early if data is not valid
+  if (!data || !data.tracks || !data.tracks.items || data.tracks.items.length === 0) {
+    return;
   }
 
   const valences = data.tracks.items
-    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .filter((item: any) => item.audioFeatures) 
     .map((item: any) => item.audioFeatures.valence);
   const energies = data.tracks.items
-    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .filter((item: any) => item.audioFeatures) 
     .map((item: any) => item.audioFeatures.energy);
   const danceabilities = data.tracks.items
-    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .filter((item: any) => item.audioFeatures) 
     .map((item: any) => item.audioFeatures.danceability);
   const tempos = data.tracks.items
-    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .filter((item: any) => item.audioFeatures) 
     .map((item: any) => item.audioFeatures.tempo);
   const loudnesses = data.tracks.items
-    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .filter((item: any) => item.audioFeatures) 
     .map((item: any) => item.audioFeatures.loudness);
   const acousticnesses = data.tracks.items
-    .filter((item: any) => item.audioFeatures) // Filter out items without audioFeatures
+    .filter((item: any) => item.audioFeatures) 
     .map((item: any) => item.audioFeatures.acousticness);
 
   const normalizedTempos = normalize(tempos);
@@ -161,8 +151,7 @@ function getChartData(data: any): any {
     normalizedTempos.reduce((a: any, b: any) => a + b) /
     normalizedTempos.length;
   const averageNormalizedLoudness =
-    normalizedLoudnesses.reduce((a: any, b: any) => a + b) /
-    normalizedLoudnesses.length;
+    normalizedLoudnesses.reduce((a: any, b: any) => a + b) / normalizedLoudnesses.length;
   const averageAcousticness =
     acousticnesses.reduce((a: any, b: any) => a + b) / acousticnesses.length;
 
@@ -213,6 +202,7 @@ function normalize(values: number[]) {
   );
   return normalizedValues;
 }
+
 function getMinMax(values: number[]): [number, number] {
   const min = _.min(values) as number;
   const max = _.max(values) as number;
