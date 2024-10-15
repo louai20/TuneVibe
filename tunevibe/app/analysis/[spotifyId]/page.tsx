@@ -16,7 +16,7 @@ import { pageDebug } from "@/utils/debugger";
 import MoodChart from "@/components/MoodChart";
 import RecommendationList from "@/components/RecommendationList";
 import { handleDownloadAndShare } from "@/utils/downloadHelper";
-import FloatingShapes from '@/components/FloatingShapes';
+import FloatingShapes from "@/components/FloatingShapes";
 export default function AnalysisPage() {
   const { spotifyId } = useParams();
   const { user, theme, setUser, toggleTheme } = useStore();
@@ -29,7 +29,7 @@ export default function AnalysisPage() {
   // nextauth
   const { data: session, status } = useSession();
 
-  const [loading, setLoading] = useState(true); // Initialize loading state
+  const [loading, setLoading] = useState(true); // Initialize loading state.
   const [isSaved, setIsSaved] = useState(false);
 
   const { openAuthModal, closeAuthModal } = useStore();
