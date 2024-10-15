@@ -44,6 +44,8 @@ export const authOptions: NextAuthOptions = {
             });
 
             console.log("Verification email sent");
+
+            throw new Error("Email not verified. Verification link sent.");
           } catch (error) {
             throw new Error("Email not verified. Verification link sent.");
           }
@@ -62,6 +64,7 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
+
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID as string,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET as string,
