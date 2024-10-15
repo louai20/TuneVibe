@@ -123,9 +123,7 @@ export default function RecommendationList({ data }: any) {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Badge color="green" radius="large">
-                        Spotify
-                      </Badge>
+                      <span className="icon-[mdi--spotify] mr-2 text-xl"></span>
                     </a>
                   </Flex>
                 </Table.Cell>
