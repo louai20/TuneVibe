@@ -76,7 +76,7 @@ export default function Page() {
                   <AvatarImage src="https://github.com/louai20.png" alt="Mohammed Louai Alayoubi" />
                   <AvatarFallback>ML</AvatarFallback>
                 </Avatar>
-                <CardTitle>Mohammed Louai Alayoubi</CardTitle>
+                <CardTitle>Mohammed Louai</CardTitle>
               </CardHeader>
               <CardContent className="flex justify-center w-full">
                 <div className="flex space-x-4 mt-4">
@@ -134,7 +134,7 @@ export default function Page() {
                   <AvatarImage src="https://github.com/danaghafour.png" alt="Dana Ghafour Fatulla" />
                   <AvatarFallback>DG</AvatarFallback>
                 </Avatar>
-                <CardTitle>Dana Ghafour Fatulla</CardTitle>
+                <CardTitle>Dana Ghafour</CardTitle>
               </CardHeader>
               <CardContent className="flex justify-center w-full">
                 <div className="flex space-x-4 mt-4">
