@@ -16,28 +16,33 @@ export const usePlaylistHandler = () => {
 
     const router = useRouter(); // Initialize useRouter
 
+    const clearError = () => {
+        setError(null);
+    };
+    
     const handleFetchPlaylist = async (playlistUrl: string) => {
         setIsLoading(true);
         setError(null); // Reset error state
         setPlaylistData(null); // Reset playlist data
 
         const playlistId = extractPlaylistId(playlistUrl);
-        if (playlistId) {
-            try {
-                const response = await axios.get(`/api/playlist/${playlistId}`);
-                const data = response.data;
-                setPlaylistData(data);
-                router.push(`/analysis/${playlistId}`);
-                // console.log(data);
-            } catch (err: any) {
-                console.error("Error fetching playlist data:", err);
-                setError("Error fetching playlist data.");
-            }
-        } else {
-            setError("Invalid Spotify URL");
+        if (!playlistId) {
+            setError("Invalid Spotify playlist URL. Please enter a valid URL.");
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const response = await axios.get(`/api/playlist/${playlistId}`);
+            const data = response.data;
+            setPlaylistData(data);
+            router.push(`/analysis/${playlistId}`);
+        } catch (err: any) {
+            console.error("Error fetching playlist data:", err);
+            setError(err.response?.data?.error || "Error fetching playlist data. Please try again.");
         }
         setIsLoading(false);
     };
 
-    return { playlistData, isLoading, error, handleFetchPlaylist };
+    return { playlistData, isLoading, error, handleFetchPlaylist, clearError };
 };

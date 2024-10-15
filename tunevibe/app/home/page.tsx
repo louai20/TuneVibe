@@ -18,7 +18,7 @@ export default function Home() {
     const isLoggedIn = !!user;
 
     const [playlistUrl, setPlaylistUrl] = useState("");
-    const { playlistData, isLoading, error, handleFetchPlaylist } =
+    const { playlistData, isLoading, error, handleFetchPlaylist, clearError } =
         usePlaylistHandler(); // Destructure values from the custom hook
     // nextauth
     const { data: session, status } = useSession();
@@ -29,6 +29,7 @@ export default function Home() {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPlaylistUrl(e.target.value);
+        clearError(); // Clear the error when the input changes
     };
 
     return (
@@ -48,54 +49,58 @@ export default function Home() {
                 </section>
 
                 <section className="mb-24 max-w-4xl mx-auto space-y-2">
-                    <div className="flex gap-2 items-center">
-                        <Input
-                            type="text"
-                            value={playlistUrl}
-                            onChange={(e) => setPlaylistUrl(e.target.value)}
-                            placeholder="Enter the URL of a specific playlist"
-                            className="flex-grow"
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={(e) => {
-                                e.preventDefault();
-                                const url =
-                                    e.dataTransfer.getData("playlistUrl");
-                                if (url) {
-                                    setPlaylistUrl(url);
-                                }
-                            }}
-                        />
-                        {status !== "authenticated" && (
-                            <span className="text-sm">Or</span>
-                        )}
-                        <div>
-                            {status === "authenticated" ? (
-                                <Button
-                                    className="flex items-center bg-[#1DB954] hover:bg-[#1ed760] text-white"
-                                    type="button"
-                                    disabled={true}
-                                >
-                                    <span className="icon-[mdi--spotify] mr-2 text-xl"></span>
-                                    Imported from {session.user?.name}
-                                </Button>
-                            ) : (
-                                <Button
-                                    className="flex items-center bg-[#1DB954] hover:bg-[#1ed760] text-white"
-                                    onClick={handleImportClick}
-                                    disabled={status === "loading"}
-                                >
-                                    <span className="icon-[mdi--spotify] mr-2 text-xl"></span>
-                                    Import from Spotify
-                                </Button>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex gap-2 items-center">
+                            <Input
+                                type="text"
+                                value={playlistUrl}
+                                onChange={handleInputChange}
+                                placeholder="Enter the URL of a specific playlist"
+                                className="flex-grow"
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+                                    const url =
+                                        e.dataTransfer.getData("playlistUrl");
+                                    if (url) {
+                                        setPlaylistUrl(url);
+                                        clearError(); // Clear the error when a playlist is dropped
+                                    }
+                                }}
+                            />
+                            {status !== "authenticated" && (
+                                <span className="text-sm">Or</span>
                             )}
+                            <div>
+                                {status === "authenticated" ? (
+                                    <Button
+                                        className="flex items-center bg-[#1DB954] hover:bg-[#1ed760] text-white"
+                                        type="button"
+                                        disabled={true}
+                                    >
+                                        <span className="icon-[mdi--spotify] mr-2 text-xl"></span>
+                                        Imported from {session.user?.name}
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        className="flex items-center bg-[#1DB954] hover:bg-[#1ed760] text-white"
+                                        onClick={handleImportClick}
+                                        disabled={status === "loading"}
+                                    >
+                                        <span className="icon-[mdi--spotify] mr-2 text-xl"></span>
+                                        Import from Spotify
+                                    </Button>
+                                )}
+                            </div>
+                            <Button
+                                className="self-end"
+                                onClick={() => handleFetchPlaylist(playlistUrl)}
+                                disabled={isLoading || !playlistUrl}
+                            >
+                                {isLoading ? "Loading..." : "Analyze Playlist"}
+                            </Button>
                         </div>
-                        <Button
-                            className="self-end"
-                            onClick={() => handleFetchPlaylist(playlistUrl)} // Use the handler from the custom hook
-                            disabled={isLoading || !playlistUrl} // Disable button if no URL or
-                        >
-                            {isLoading ? "Loading..." : "Analyze Playlist"}
-                        </Button>
+                        {error && <p className="text-red-500 mt-2">{error}</p>}
                     </div>
                     <div>{session?.accessToken && <ImportedPlaylists />}</div>
                 </section>
