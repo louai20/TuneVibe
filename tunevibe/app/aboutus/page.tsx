@@ -14,35 +14,54 @@ export default function Page() {
       <section className="py-16 animate-fade-slide-in relative z-20">
   <div className="container mx-auto px-4">
     <div className="text-center">
-      <h1 className="text-4xl font-bold">About Us</h1>
+      <h1 className="text-4xl font-bold">About TuneVibe</h1>
       <p className="text-lg mt-4">
-            At TuneVibe, our mission was to revolutionize how users interact with music by providing data visualization for music analysis and insights into their listening habits. We wanted to provide features that would provide the most value to users. This user-centric approach led us to build the essential features of TuneVibe first, ensuring a seamless experience.
-            </p>
-          </div>
-        </div>
-      </section>
+        TuneVibe is a sophisticated music analysis platform that dives deep into the audio features of your favorite playlists. Our mission is to provide you with insightful visualizations and data-driven analysis of your music, helping you understand the intricate characteristics that define your taste in music.
+      </p>
+    </div>
+  </div>
+</section>
 
       {/* Main Content Section */}
       <div className="container mx-auto px-4 py-8 animate-fade-slide-in relative z-20">
         {/* Project Description */}
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8">
+        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mb-16">
           {/* Image Section */}
-          <div>
+          <div className="lg:order-2">
             <img
-              className="rounded-lg shadow-md object-cover"
-              src="https://example.com/playlist-analysis.png"
-              alt="Music Sentiment Analysis"
+              className="object-contain w-full h-auto max-h-[400px]"
+              src="/moodchart.png"
+              alt="Moodchart and recommendations example"
             />
           </div>
 
           {/* Text Section */}
           <div className="flex flex-col justify-center">
-          <h2 className="text-3xl font-bold">Our Development Journey</h2>
-          <p className="text-lg mt-4">
-            Building TuneVibe was a collaborative effort between passionate developers who wanted to enhance the way people engage with their music. Throughout the development process, we encountered various technical challenges, because ensuring a smooth user experience on our platform was a top priority. At the core of it—in every decision made—the driving factor was a desire to create a tool that was not only functional but also easy to use.</p>
+            <h2 className="text-3xl font-bold">Mood Analysis and Recommendations</h2>
+            <p className="text-lg mt-4">
+              Our mood chart provides a comprehensive overview of your playlist's emotional landscape. By analyzing key audio features like valence, energy, and danceability, we create a visual representation of your music's mood. This chart helps you understand the overall emotional tone of your playlist at a glance. Additionally, our recommendation system uses this mood analysis to suggest new tracks that align with your playlist's vibe, helping you discover music that resonates with your current mood and preferences.
+            </p>
+          </div>
+        </div>
+
+        {/* Bubble Chart Section */}
+        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8">
+          <div>
+            <img
+              className="object-contain w-full h-auto max-h-[400px]"
+              src="/bubblechart.png"
+              alt="Bubble chart example"
+            />
+          </div>
+          <div className="flex flex-col justify-center">
+            <h2 className="text-3xl font-bold">Uncover Patterns in Your Playlist</h2>
+            <p className="text-lg mt-4">
+              Our bubble chart offers an interactive way to explore the relationships between different audio features in your playlist. Each bubble represents a track, with its size and position determined by various audio characteristics. This visualization allows you to identify patterns and clusters in your music taste, helping you discover which audio features are most prominent in your favorite tracks. It's a powerful tool for understanding the nuances of your music preferences and how different songs in your playlist relate to each other.
+            </p>
           </div>
         </div>
       </div>
+      
 
                   {/* Developer Section */}
       <section className="py-16 mt-16 animate-fade-slide-in relative z-20">
