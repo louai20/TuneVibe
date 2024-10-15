@@ -45,7 +45,10 @@ export const authOptions: NextAuthOptions = {
 
             console.log("Verification email sent");
 
-            throw new Error("Email not verified. Verification link sent.");
+            return {
+              error:
+                "Email not verified. Verification link sent. Please check your inbox.",
+            };
           } catch (error) {
             console.error("Error sending verification email:", error);
             throw new Error(
