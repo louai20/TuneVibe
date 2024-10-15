@@ -87,11 +87,11 @@ export default function MoodChart({ data }: any) {
                     </Flex>
                   </Table.Cell>
                   <Table.Cell>
-                    <Flex gap="1" align="center">
+                    <Flex gap="2">
                       <Badge color="yellow" radius="large">
                         {valenceBadge}
                       </Badge>
-                      <Badge color="green" radius="large">
+                      <Badge color="blue" radius="large">
                         {energyBadge}
                       </Badge>
                       <Badge color="iris" radius="large">
@@ -184,9 +184,12 @@ function getChartData(data: any): any {
           averageAcousticness * 100,
         ],
         backgroundColor: [
-          "rgb(255, 99, 132)",
-          "rgb(54, 162, 235)",
-          "rgb(255, 99, 5)",
+          "rgb(253, 222, 85)",
+          "rgb(58, 166, 185)",
+          "rgb(137, 138, 217)",
+          "rgb(13, 124, 102)",
+          "rgb(219, 83, 117)",
+          "rgb(202, 230, 178)"
         ],
         hoverOffset: 2,
       },
