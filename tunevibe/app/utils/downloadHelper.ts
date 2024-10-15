@@ -1,22 +1,23 @@
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
+import { toast } from "react-hot-toast";
 
-const uploadFileToFileIo = async (file: File): Promise<string> => {
+const uploadImageToImgur = async (file: File): Promise<string> => {
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append("image", file);
 
-  const response = await fetch("https://file.io", {
+  // Send the file to your Next.js API route
+  const response = await fetch("/api/upload", {
     method: "POST",
     body: formData,
   });
 
   const data = await response.json();
 
-  // Check if the response contains a link
-  if (data.success) {
-    return data.link; // Assuming the response has a 'link' property
+  if (response.ok) {
+    return data.link; // Return the link to the uploaded image
   } else {
-    throw new Error("File upload failed: " + data.error);
+    throw new Error("Image upload failed: " + data.error);
   }
 };
 
@@ -36,10 +37,15 @@ export const handleDownloadAndShare = async (
   }
 
   try {
+    // Show loading toast
+    const loadingToastId = toast.loading("Generating your document...");
+
     // Capture the first element as an image
     const firstCanvas = await html2canvas(firstElement, {
       backgroundColor: null, // Retain background styles
       scale: 2, // Increase scale for better resolution
+      useCORS: true, // Enable CORS if you're loading external images
+      imageTimeout: 2000, // Allow images to load
     });
 
     // Create a new PDF document
@@ -72,13 +78,13 @@ export const handleDownloadAndShare = async (
       // Save the PDF
       pdf.save(filename);
     } else if (action === "share") {
-      // Convert the PDF to a Blob for uploading
-      const pdfOutput = pdf.output("blob"); // Get the PDF as a Blob
-
-      // Convert Blob to File
-      const file = new File([pdfOutput], filename, { type: "application/pdf" });
-      // Upload the PDF to file.io and share the link
-      const shareableLink = await uploadFileToFileIo(file); // Update this to use the File object
+      // Upload the chart image to Imgur
+      const chartImageFile = new File(
+        [await fetch(imgData).then((res) => res.blob())],
+        "chart.png",
+        { type: "image/png" }
+      );
+      const shareableLink = await uploadImageToImgur(chartImageFile); // Upload the image to Imgur
 
       // Share the link on Twitter
       const twitterShareUrl = `https://x.com/intent/tweet?url=${encodeURIComponent(
@@ -86,7 +92,14 @@ export const handleDownloadAndShare = async (
       )}&text=Check%20out%20my%20analysis!`;
       window.open(twitterShareUrl, "_blank");
     }
+
+    // Show success toast
+    toast.success("Document generated successfully!");
+
+    // Close the loading toast
+    toast.dismiss(loadingToastId);
   } catch (error) {
     console.error("Error generating PDF:", error);
+    toast.error("Error generating document.");
   }
 };
