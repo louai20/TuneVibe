@@ -127,7 +127,7 @@ export default function AnalysisPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden">
       <NavBar />
       <FloatingShapes />
       <main className="container mx-auto px-4 py-8 relative z-20">
