@@ -19,7 +19,6 @@ model User {
   name            String
   email           String               @unique
   password        String
-  isVerified     Boolean  @default(false)
   savedPlaylists  UserSavedPlaylist[]  
 }
 
