@@ -52,7 +52,7 @@ export default function Playlists() {
         }
 
         const data = await response.json();
-        console.log("Fetched Playlists:", data); // Log fetched data for debugging
+        // console.log("Fetched Playlists:", data); // Log fetched data for debugging
 
         // Only update state if the component is still mounted
         if (isMounted) {
@@ -170,7 +170,7 @@ const PlaylistCard = ({ playlist }: { playlist: Playlist }) => {
         throw new Error("Failed to save playlist");
       }
       const data = await response.json();
-      console.log("Playlist saved successfully!", data);
+      // console.log("Playlist saved successfully!", data);
 
       // After saving, navigate to the home page
       router.push(`/home`); // Navigate to home without URL

@@ -30,8 +30,8 @@ export const authOptions: NextAuthOptions = {
         if (!user.isVerified) {
           try {
             // Log base URL and email to verify values
-            console.log("Base URL:", process.env.NEXT_PUBLIC_BASE_URL);
-            console.log("Sending verification email to:", user.email);
+            // console.log("Base URL:", process.env.NEXT_PUBLIC_BASE_URL);
+            // console.log("Sending verification email to:", user.email);
 
             // Send verification email
             const token = createVerificationToken(user.id);
@@ -43,7 +43,7 @@ export const authOptions: NextAuthOptions = {
               text: `Click this link to verify your email: ${verificationUrl}`,
             });
 
-            console.log("Verification email sent");
+            // console.log("Verification email sent");
 
             throw new Error("Email not verified. Verification link sent.");
           } catch (error) {
