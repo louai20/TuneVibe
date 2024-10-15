@@ -75,25 +75,24 @@ export default function RecommendationList({ data }: any) {
           <Table.Body>
             {recommendations.tracks.map((item: any, index: any) => (
               <Table.Row key={index}>
-                <Table.Cell className="text-center w-9">
-                  <button
-                    hidden={item.preview_url == null}
-                    onClick={() =>
-                      playing && currentTrackUrl == item.preview_url
-                        ? pause()
-                        : play(item.preview_url)
-                    }
-                  >
-                    {" "}
-                    {playing && currentTrackUrl == item.preview_url ? (
-                      <PauseIcon />
-                    ) : (
-                      <PlayIcon />
-                    )}
-                  </button>
-                </Table.Cell>
                 <Table.Cell>
                   <Flex gap="3" align="center">
+                    <button
+                      className={`flex items-center justify-center w-8 h-8 ${item.preview_url == null ? 'invisible' : ''}`}
+                      hidden={item.preview_url == null}
+                      onClick={() =>
+                        playing && currentTrackUrl == item.preview_url
+                          ? pause()
+                          : play(item.preview_url)
+                      }
+                    >
+                      {" "}
+                      {playing && currentTrackUrl == item.preview_url ? (
+                        <PauseIcon />
+                      ) : (
+                        <PlayIcon />
+                      )}
+                    </button>
                     <Avatar
                       src={item.album.images[2]?.url}
                       size="1"
